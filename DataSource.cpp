@@ -179,7 +179,7 @@ bool DataSource::loadMap(const std::string& name, MapInfo& dest)
 	return true;
 }
 
-void DataSource::getMapList(std::vector<std::string>& list, bool onlyAutoLoad)
+void DataSource::getMapList(std::vector<std::pair<std::string, bool>>& list, bool onlyAutoLoad)
 {
 	try
 	{
@@ -192,7 +192,8 @@ void DataSource::getMapList(std::vector<std::string>& list, bool onlyAutoLoad)
 		
 		while (mapcur->more())
 		{
-			list.push_back(mapcur->next()["name"].str());
+			auto obj = mapcur->next();
+			list.push_back(std::make_pair(obj["name"].str(), obj["autoload"].boolean()));
 		}
 
 		std::cout << "[DataSource] Got a list of " << list.size() << " maps.\n";
@@ -201,4 +202,42 @@ void DataSource::getMapList(std::vector<std::string>& list, bool onlyAutoLoad)
 	{
 		std::cout << "[DataSource] Error occured when gathering map list. Caught " << e.what() << "\n";
 	}
+}
+
+bool DataSource::getMapInfo(const std::string& name, MapInfo& dest)
+{
+	try
+	{
+		auto map = conn->findOne(g_dbname_map, QUERY("name" << name));
+		if (map.isEmpty())
+		{
+			std::cout << "[DataSource] Map " << name << " not found. Failed to get info.\n";
+			return false;
+		}
+		dest.name = map["name"].str();
+		dest.autoload = map["autoload"].boolean();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Map fetching failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::setMapAutoLoad(const std::string& name, bool autoload)
+{
+	try
+	{
+		conn->update(g_dbname_map, 
+			QUERY("name" << name),
+			BSON("$set" << BSON("autoload" << autoload))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Map fetching failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
 }

@@ -4,6 +4,8 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
+#include <thread>
+#include <chrono>
 
 #include "DataSource.h"
 #include "MapCodeParser.h"
@@ -45,6 +47,19 @@ public:
 	}
 } mapSave(&s);
 
+class MapDispose : public XmlRpcServerMethod
+{
+public:
+	MapDispose(XmlRpcServer* s) : XmlRpcServerMethod("mapDispose", s) {}
+
+	void execute(XmlRpcValue& params, XmlRpcValue& result)
+	{
+		std::stringstream r;
+		r << g_mapmanager->dispose(params[0]);
+		result = r.str();
+	}
+} mapDispose(&s);
+
 class MapLoad : public XmlRpcServerMethod
 {
 public:
@@ -58,8 +73,96 @@ public:
 	}
 } mapLoad(&s);
 
+class MapUnload : public XmlRpcServerMethod
+{
+public:
+	MapUnload(XmlRpcServer* s) : XmlRpcServerMethod("mapUnload", s) {}
+
+	void execute(XmlRpcValue& params, XmlRpcValue& result)
+	{
+		std::stringstream r;
+		r << g_mapmanager->unload(params[0]);
+		result = r.str();
+	}
+} mapUnload(&s);
+
+class MapGetDetail : public XmlRpcServerMethod
+{
+public:
+	MapGetDetail(XmlRpcServer* s) : XmlRpcServerMethod("mapGetDetail", s) {}
+
+	void execute(XmlRpcValue& params, XmlRpcValue& result)
+	{
+		std::string name = params[0];
+
+		std::stringstream r;
+
+		MapInfo dest;
+
+		if (g_datasource->getMapInfo(name, dest))
+		{
+			r << "Name: " << dest.name << "<br/><br/>";
+			r << "Autoload: " << (dest.autoload ? "Yes" : "No") << "<br/>";
+			r << "<a href=\"rpc_map_set_autoload.php?autoload=true&name=" << dest.name << "\">Enable Autoload</a><br/>";
+			r << "<a href=\"rpc_map_set_autoload.php?autoload=false&name=" << dest.name << "\">Disable Autoload</a><br/><br/>";
+			r << "Loaded: " << (g_mapmanager->isLoaded(dest.name) ? "Yes" : "No") << "<br/>";
+			r << "<a href=\"rpc_map_load.php?name=" << dest.name << "\">Load</a><br/>";
+			r << "<a href=\"rpc_map_unload.php?name=" << dest.name << "\">Unload</a><br/>";
+			r << "<br/><br/><br/>";
+			r << "<a href=\"rpc_map_dispose.php?name=" << dest.name << "\">DETELE THIS MAP</a><br/>";
+		}
+		else
+		{
+			r << "Map doesn't exist.";
+		}
+		result = r.str();
+	}
+} mapGetDetail(&s);
+
+class MapList : public XmlRpcServerMethod
+{
+public:
+	MapList(XmlRpcServer* s) : XmlRpcServerMethod("mapList", s) {}
+
+	void execute(XmlRpcValue& params, XmlRpcValue& result)
+	{
+		std::vector<std::pair<std::string, bool>> list;
+		g_datasource->getMapList(list, false);
+
+		std::stringstream r;
+
+		for (auto i : list)
+		{
+			r << "<a href=\"map_view_detail.php?name=" << i.first << "\">" << i.first <<"</a>";
+			i.second ?
+				r << " [Autoload Enabled " << "<a href=\"rpc_map_set_autoload.php?autoload=false&name=" << i.first << "\">Disable</a>]" :
+				r << " [<a href=\"rpc_map_set_autoload.php?autoload=true&name=" << i.first << "\">Enable Autoload</a>]";
+			g_mapmanager->isLoaded(i.first) ?
+				r << " [Loaded " << "<a href=\"rpc_map_unload.php?name=" << i.first << "\">Unload</a>]" :
+				r << " [<a href=\"rpc_map_load.php?name=" << i.first << "\">Load</a>]";
+			r << "<br/>";
+		}
+		result = r.str();
+	}
+} mapList(&s);
+
+class MapSetAutoLoad : public XmlRpcServerMethod
+{
+public:
+	MapSetAutoLoad(XmlRpcServer* s) : XmlRpcServerMethod("mapSetAutoLoad", s) {}
+
+	void execute(XmlRpcValue& params, XmlRpcValue& result)
+	{
+		std::stringstream r;
+		r << g_datasource->setMapAutoLoad(params[0], params[1]);
+		result = r.str();
+	}
+} mapSetAutoLoad(&s);
+
 void runServer()
 {
+	std::cout << "Wait 1 sec for samp to init.\n";
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	g_datasource.reset(new DataSource("localhost"));
 	g_mapmanager.reset(new MapManager(*g_datasource));
 	g_mapmanager->loadAutoLoadMaps();

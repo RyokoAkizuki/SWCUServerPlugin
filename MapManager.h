@@ -16,6 +16,8 @@ protected:
 public:
 	MapManager(DataSource& datasrc) : datasource(datasrc) {}
 
+	DataSource& getDataSource() { return datasource;  }
+
 	bool save(const MapInfo& map, bool autoload);
 	bool dispose(const std::string& name);
 

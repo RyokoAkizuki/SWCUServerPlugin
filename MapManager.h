@@ -22,4 +22,6 @@ public:
 	bool load(const std::string& name);
 	bool unload(const std::string& name);
 	bool isLoaded(const std::string& name);
+
+	void loadAutoLoadMaps();
 };

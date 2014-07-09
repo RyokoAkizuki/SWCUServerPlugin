@@ -1,3 +1,5 @@
+#include "mongo/client/dbclient.h"
+
 #include "DataSource.h"
 
 std::string
@@ -6,11 +8,11 @@ std::string
 	g_dbname_map_veh = "swcuserver.map.detail.vehicle"
 	;
 
-DataSource::DataSource(const std::string& host) : conn(true)
+DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnection(true))
 {
 	try
 	{
-		conn.connect(host);
+		conn->connect(host);
 		std::cout << "[DataSource] Connected to " << host << ".\n";
 	}
 	catch (const mongo::DBException &e)
@@ -21,14 +23,14 @@ DataSource::DataSource(const std::string& host) : conn(true)
 
 	try
 	{
-		conn.createCollection(g_dbname_map);
-		conn.ensureIndex(g_dbname_map, BSON("name" << 1 << "autoload" << 1), true);
+		conn->createCollection(g_dbname_map);
+		conn->ensureIndex(g_dbname_map, BSON("name" << 1 << "autoload" << 1), true);
 
-		conn.createCollection(g_dbname_map_obj);
-		conn.ensureIndex(g_dbname_map_obj, BSON("mapid" << 1), false);
+		conn->createCollection(g_dbname_map_obj);
+		conn->ensureIndex(g_dbname_map_obj, BSON("mapid" << 1), false);
 
-		conn.createCollection(g_dbname_map_veh);
-		conn.ensureIndex(g_dbname_map_veh, BSON("mapid" << 1), false);
+		conn->createCollection(g_dbname_map_veh);
+		conn->ensureIndex(g_dbname_map_veh, BSON("mapid" << 1), false);
 
 		std::cout << "[DataSource] Data collections are ready.\n";
 	}
@@ -39,15 +41,18 @@ DataSource::DataSource(const std::string& host) : conn(true)
 	}
 }
 
+// To prevent unique_ptr from complaining for complete definition of mongo::DBClientConnection
+DataSource::~DataSource() {}
+
 bool DataSource::saveMap(const MapInfo& map, bool autoload)
 {
 	try
 	{
 		mongo::OID mapid(mongo::OID::gen());
 
-		conn.insert(g_dbname_map, BSON("_id" << mapid << "name" << map.name << "date" << mongo::DATENOW << "autoload" << autoload));
+		conn->insert(g_dbname_map, BSON("_id" << mapid << "name" << map.name << "date" << mongo::DATENOW << "autoload" << autoload));
 
-		auto err = conn.getLastError();
+		auto err = conn->getLastError();
 
 		if (err.size())
 		{
@@ -88,8 +93,8 @@ bool DataSource::saveMap(const MapInfo& map, bool autoload)
 				));
 		}
 
-		conn.insert(g_dbname_map_obj, objs);
-		conn.insert(g_dbname_map_veh, vehs);
+		conn->insert(g_dbname_map_obj, objs);
+		conn->insert(g_dbname_map_veh, vehs);
 	}
 	catch (const mongo::DBException &e)
 	{
@@ -103,16 +108,16 @@ bool DataSource::disposeMap(const std::string& name)
 {
 	try
 	{
-		auto map = conn.findOne(g_dbname_map, QUERY("name" << name));
+		auto map = conn->findOne(g_dbname_map, QUERY("name" << name));
 		if (map.isEmpty())
 		{
 			std::cout << "[DataSource] Map " << name << " not found. Disposing request ignored.\n";
 			return false;
 		}
 		auto id = map["_id"].OID();
-		conn.remove(g_dbname_map, QUERY("_id" << id), true);
-		conn.remove(g_dbname_map_obj, BSON("mapid" << id));
-		conn.remove(g_dbname_map_veh, BSON("mapid" << id));
+		conn->remove(g_dbname_map, QUERY("_id" << id), true);
+		conn->remove(g_dbname_map_obj, BSON("mapid" << id));
+		conn->remove(g_dbname_map_veh, BSON("mapid" << id));
 	}
 	catch (const mongo::DBException &e)
 	{
@@ -126,7 +131,7 @@ bool DataSource::loadMap(const std::string& name, MapInfo& dest)
 {
 	try
 	{
-		auto map = conn.findOne(g_dbname_map, QUERY("name" << name));
+		auto map = conn->findOne(g_dbname_map, QUERY("name" << name));
 		if (map.isEmpty())
 		{
 			std::cout << "[DataSource] Map " << name << " not found. Can't load it.\n";
@@ -136,7 +141,7 @@ bool DataSource::loadMap(const std::string& name, MapInfo& dest)
 		dest.name = map["name"].str();
 		dest.autoload = map["autoload"].boolean();
 
-		auto cur = conn.query(g_dbname_map_obj, QUERY("mapid" << id));
+		auto cur = conn->query(g_dbname_map_obj, QUERY("mapid" << id));
 		while (cur->more())
 		{
 			auto obj = cur->next();
@@ -151,7 +156,7 @@ bool DataSource::loadMap(const std::string& name, MapInfo& dest)
 			});
 		}
 
-		cur = conn.query(g_dbname_map_veh, QUERY("mapid" << id));
+		cur = conn->query(g_dbname_map_veh, QUERY("mapid" << id));
 		while (cur->more())
 		{
 			auto obj = cur->next();
@@ -172,4 +177,28 @@ bool DataSource::loadMap(const std::string& name, MapInfo& dest)
 		return false;
 	}
 	return true;
+}
+
+void DataSource::getMapList(std::vector<std::string>& list, bool onlyAutoLoad)
+{
+	try
+	{
+		std::cout << "[DataSource] Generating map list. OnlyAutoLoad = " << onlyAutoLoad << ".\n";
+
+		auto mapcur = onlyAutoLoad ?
+			conn->query(g_dbname_map, QUERY("autoload" << true)) :
+			conn->query(g_dbname_map);
+
+		
+		while (mapcur->more())
+		{
+			list.push_back(mapcur->next()["name"].str());
+		}
+
+		std::cout << "[DataSource] Got a list of " << list.size() << " maps.\n";
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Error occured when gathering map list. Caught " << e.what() << "\n";
+	}
 }

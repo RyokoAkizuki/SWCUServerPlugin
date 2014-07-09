@@ -62,6 +62,7 @@ void runServer()
 {
 	g_datasource.reset(new DataSource("localhost"));
 	g_mapmanager.reset(new MapManager(*g_datasource));
+	g_mapmanager->loadAutoLoadMaps();
 
 	int port = 7776;
 	XmlRpc::setVerbosity(5);

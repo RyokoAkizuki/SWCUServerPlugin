@@ -80,3 +80,15 @@ bool MapManager::isLoaded(const std::string& name)
 {
 	return loadedmap.count(name);
 }
+
+void MapManager::loadAutoLoadMaps()
+{
+	std::cout << "[MapManager] Autoloading...\n";
+	std::vector<std::string> list;
+	datasource.getMapList(list, true);
+	for (auto i : list)
+	{
+		load(i);
+	}
+	std::cout << "[MapManager] Autoload: Loaded " << list.size() << " maps.\n";
+}

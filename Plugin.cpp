@@ -11,6 +11,8 @@
 #include <sampgdk/sdk.h>
 #include <sampgdk/interop.h>
 
+#include "DialogManager.h"
+
 using sampgdk::logprintf;
 
 #define SUPPORTS_PROCESS_TICK 0x20000
@@ -18,6 +20,7 @@ using sampgdk::logprintf;
 void runServer(); // defined in RPCServer.cpp
 
 std::thread rpcServer;
+DialogManager dialogmanager;
 
 void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params) {
 	logprintf("Tick count: %d", GetTickCount());
@@ -38,9 +41,22 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 		CreateVehicle(411, pos[0], pos[1], pos[2], 0.0, 1, 1, 120);
 		return true;
 	}
+	if (strcmp(cmdtext, "/dlg") == 0) {
+		dialogmanager.displayInputDialog(playerid, "测试标题哦", "请输入一句话~", "吃掉它", "我要兔子", false,
+			[playerid](const std::string& input) { SendClientMessage(playerid, 0xFFFFFFFF, input.c_str()); },
+			[playerid](const std::string& input) { SendClientMessage(playerid, 0xFFFFFFFF, "吃兔子吧~~"); }
+		);
+		return true;
+	}
 	float pos[3];
 	GetPlayerPos(playerid, &pos[0], &pos[1], &pos[2]);
 	return false;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char * inputtext)
+{
+	dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
+	return true;
 }
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {

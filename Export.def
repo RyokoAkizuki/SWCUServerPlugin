@@ -6,3 +6,5 @@ EXPORTS
 	OnPlayerConnect
 	OnPlayerRequestClass
 	OnPlayerCommandText
+	OnDialogResponse
+

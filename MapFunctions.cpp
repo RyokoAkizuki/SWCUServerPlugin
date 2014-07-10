@@ -27,7 +27,7 @@ int createObject(const ObjectInfo& obj)
 	_initStreamerFunctions();
 	return sampgdk_InvokeNative(g_streamer_create_object, "iffffffiiiff",
 		obj.model, obj.x, obj.y, obj.z, obj.rx, obj.ry, obj.rz,
-		-1, -1, -1, 200.0f, 0.0f);
+		-1, -1, -1, 500.0f, 0.0f);
 }
 
 int destroyObject(int id)

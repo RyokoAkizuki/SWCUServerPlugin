@@ -131,17 +131,12 @@ public:
 
 		std::stringstream r;
 
+		r << "<maplist>\n";
 		for (auto i : list)
 		{
-			r << "<a href=\"map_view_detail.php?name=" << i.first << "\">" << i.first <<"</a>";
-			i.second ?
-				r << " [Autoload Enabled " << "<a href=\"rpc_map_set_autoload.php?autoload=false&name=" << i.first << "\">Disable</a>]" :
-				r << " [<a href=\"rpc_map_set_autoload.php?autoload=true&name=" << i.first << "\">Enable Autoload</a>]";
-			g_mapmanager->isLoaded(i.first) ?
-				r << " [Loaded " << "<a href=\"rpc_map_unload.php?name=" << i.first << "\">Unload</a>]" :
-				r << " [<a href=\"rpc_map_load.php?name=" << i.first << "\">Load</a>]";
-			r << "<br/>";
+			r << "<map name=\"" << i.first << "\" autoload=\"" << i.second << "\" loaded=\"" << g_mapmanager->isLoaded(i.first) << "\"></map>\n";
 		}
+		r << "</maplist>\n";
 		result = r.str();
 	}
 } mapList(&s);

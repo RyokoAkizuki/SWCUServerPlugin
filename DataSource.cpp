@@ -28,7 +28,8 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 	{
 		// Map
 		conn->createCollection(g_dbname_map);
-		conn->ensureIndex(g_dbname_map, BSON("name" << 1 << "autoload" << 1), true);
+		conn->ensureIndex(g_dbname_map, BSON("name" << 1), true);
+		conn->ensureIndex(g_dbname_map, BSON("autoload" << 1), false);
 
 		conn->createCollection(g_dbname_map_obj);
 		conn->ensureIndex(g_dbname_map_obj, BSON("mapid" << 1), false);
@@ -44,7 +45,7 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 
 		// Bank
 		conn->createCollection(g_dbname_bank_transfer);
-		conn->ensureIndex(g_dbname_bank_transfer, BSON("receiver" << 1 << "sender" << 1), true);
+		conn->ensureIndex(g_dbname_bank_transfer, BSON("receiver" << 1 << "sender" << 1), false);
 
 		std::cout << "[DataSource] Data collections are ready.\n";
 	}
@@ -419,11 +420,12 @@ bool DataSource::increaseAccountMoney(AccountInfo& account, int amount, const st
 			);
 
 		conn->insert(g_dbname_bank_transfer, BSON(
+			mongo::GENOID <<
 			"receiver" << id <<
 			"sender" << mongo::OID() <<
 			"time" << mongo::DATENOW <<
 			"amount" << amount <<
-			"reason" << "system command"
+			"reason" << reason
 			));
 
 		auto acc = conn->findOne(g_dbname_account, QUERY("_id" << id));

@@ -54,6 +54,9 @@
     <ClCompile Include="DialogDefinitions.cpp">
       <Filter>UI</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponShop.cpp">
+      <Filter>Shop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapManager.h">
@@ -95,6 +98,9 @@
     </ClInclude>
     <ClInclude Include="DialogDefinitions.h">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponShop.h">
+      <Filter>Shop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

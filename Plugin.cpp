@@ -13,6 +13,7 @@
 
 #include "GameServer.h"
 #include "DialogDefinitions.h"
+#include "WeaponShop.h"
 
 using sampgdk::logprintf;
 
@@ -42,10 +43,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext)
 {
+	Account& acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+
 	if (strcmp(cmdtext, "/car") == 0) {
 		float pos[3];
 		GetPlayerPos(playerid, &pos[0], &pos[1], &pos[2]);
 		CreateVehicle(411, pos[0], pos[1], pos[2], 0.0, 1, 1, 120);
+		return true;
+	}
+	if (strcmp(cmdtext, "/weapon") == 0) {
+		showWeaponShopDialog(acc);
 		return true;
 	}
 	return false;

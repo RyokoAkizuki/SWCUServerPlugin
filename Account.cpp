@@ -25,8 +25,7 @@ std::string Account::getUserID() const
 
 bool Account::setLogName(const std::string& name)
 {
-	char oldname[24];
-	GetPlayerName(info.ingameid, oldname, 24);
+	std::string oldname = info.logname;
 
 	int canchange = SetPlayerName(info.ingameid, name.c_str());
 
@@ -38,7 +37,7 @@ bool Account::setLogName(const std::string& name)
 		if (!suc)
 		{
 			SendClientMessage(info.ingameid, 0xFFFFFFFF, "[Account] 数据库返回更改登录名称失败. 请联系管理员.");
-			SetPlayerName(info.ingameid, oldname);
+			SetPlayerName(info.ingameid, oldname.c_str());
 			return false;
 		}
 		SendClientMessage(info.ingameid, 0xFFFFFFFF, "[Account] 登录名更改成功.");

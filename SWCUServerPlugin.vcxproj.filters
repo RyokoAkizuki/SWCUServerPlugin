@@ -13,6 +13,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{797d2d9b-6ef3-4dad-aa4e-c9bb997db025}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shop">
+      <UniqueIdentifier>{910dfbcf-4816-4921-8398-87c321937991}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MapFunctions.cpp">
@@ -47,6 +50,9 @@
     </ClCompile>
     <ClCompile Include="AccountManager.cpp">
       <Filter>Account</Filter>
+    </ClCompile>
+    <ClCompile Include="DialogDefinitions.cpp">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +89,12 @@
     </ClInclude>
     <ClInclude Include="AccountInfo.h">
       <Filter>Account</Filter>
+    </ClInclude>
+    <ClInclude Include="Shop.h">
+      <Filter>Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogDefinitions.h">
+      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

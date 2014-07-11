@@ -12,6 +12,7 @@
 #include <sampgdk/sdk.h>
 
 #include "GameServer.h"
+#include "DialogDefinitions.h"
 
 using sampgdk::logprintf;
 
@@ -26,33 +27,10 @@ void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params)
 	logprintf("Tick count: %d", GetTickCount());
 }
 
-void showLoginDialog(Account& player)
-{
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "登录", "请输入密码",
-		"登录", "退出服务器", false,
-		[&player](const std::string& pw) {
-			if (!player.auth(pw))
-			{
-				showLoginDialog(player);
-			}
-		},
-		[&player](const std::string& pw) { Kick(player.getInGameID()); });
-}
-
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
 	Account& acc = GameServer::getInstance().accountmanager.enterServer(playerid);
-	if (!acc.isRegistered())
-	{
-		GameServer::getInstance().dialogmanager.displayInputDialog(acc, "注册", "请输入密码",
-			"注册", "退出服务器", false,
-			[&acc](const std::string& pw) { acc.create(pw); },
-			[playerid](const std::string& pw) { Kick(playerid); });
-	}
-	else
-	{
-		showLoginDialog(acc);
-	}
+	acc.isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
 	return true;
 }
 
@@ -83,23 +61,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 {
 	Account& acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
+	if (!acc.isLoggedIn())
+	{
+		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你没有登录.");
+		return false;
+	}
+
 	if (playerid == clickedplayerid)
 	{
-		DialogItemList list;
-		list.append("查看我的信息", 
-		[&acc]()
-		{
-			std::stringstream str;
-			str << "ID: " << acc.getUserID() <<
-				"\n登录名: " << acc.getLogName() <<
-				"\n显示名: " << acc.getNickname() <<
-				"\n银行卡余额: " << acc.getMoney() <<
-				"\n管理员等级: " << acc.getAdminLevel();
-			GameServer::getInstance().dialogmanager.displayMessageDialog(acc,
-				"我的信息", str.str(), "确定", "");
-		});
-		GameServer::getInstance().dialogmanager.displayListDialog(
-			acc, "我的账号", list, "确定", "取消");
+		showAccountOptionsDialog(acc);
 	}
 
 	return true;

@@ -147,6 +147,7 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="AccountManager.cpp" />
     <ClCompile Include="DataSource.cpp" />
+    <ClCompile Include="DialogDefinitions.cpp" />
     <ClCompile Include="EncodingUtility.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
+    <ClInclude Include="DialogDefinitions.h" />
     <ClInclude Include="AccountInfo.h" />
     <ClInclude Include="AccountManager.h" />
     <ClInclude Include="DataSource.h" />
@@ -174,6 +176,7 @@
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="MapFunctions.h" />
     <ClInclude Include="sha1.h" />
+    <ClInclude Include="Shop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

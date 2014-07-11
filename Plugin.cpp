@@ -9,9 +9,8 @@
 #include <sampgdk/a_vehicles.h>
 #include <sampgdk/core.h>
 #include <sampgdk/sdk.h>
-#include <sampgdk/interop.h>
 
-#include "DialogManager.h"
+#include "GameServer.h"
 
 using sampgdk::logprintf;
 
@@ -20,58 +19,82 @@ using sampgdk::logprintf;
 void runServer(); // defined in RPCServer.cpp
 
 std::thread rpcServer;
-DialogManager dialogmanager;
 
-void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params) {
+void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params)
+{
 	logprintf("Tick count: %d", GetTickCount());
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
+void showLoginDialog(Account& player)
+{
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "登录", "请输入密码",
+		"登录", "退出服务器", false,
+		[&player](const std::string& pw) {
+			if (!player.auth(pw))
+			{
+				showLoginDialog(player);
+			}
+		},
+		[&player](const std::string& pw) { Kick(player.getInGameID()); });
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
+{
+	Account& acc = GameServer::getInstance().accountmanager.enterServer(playerid);
+	if (!acc.isRegistered())
+	{
+		GameServer::getInstance().dialogmanager.displayInputDialog(acc, "注册", "请输入密码",
+			"注册", "退出服务器", false,
+			[&acc](const std::string& pw) { acc.create(pw); },
+			[playerid](const std::string& pw) { Kick(playerid); });
+	}
+	else
+	{
+		showLoginDialog(acc);
+	}
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
+{
+	GameServer::getInstance().accountmanager.exitServer(playerid);
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext)
+{
 	if (strcmp(cmdtext, "/car") == 0) {
 		float pos[3];
 		GetPlayerPos(playerid, &pos[0], &pos[1], &pos[2]);
 		CreateVehicle(411, pos[0], pos[1], pos[2], 0.0, 1, 1, 120);
 		return true;
 	}
-	if (strcmp(cmdtext, "/dlg") == 0) {
-		dialogmanager.displayInputDialog(playerid, "测试标题哦", "请输入一句话~", "吃掉它", "我要兔子", false,
-			[playerid](const std::string& input) { SendClientMessage(playerid, 0xFFFFFFFF, input.c_str()); },
-			[playerid](const std::string& input) { SendClientMessage(playerid, 0xFFFFFFFF, "吃兔子吧~~"); }
-		);
-		return true;
-	}
-	float pos[3];
-	GetPlayerPos(playerid, &pos[0], &pos[1], &pos[2]);
 	return false;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char * inputtext)
 {
-	dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
+	GameServer::getInstance().dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
 	return true;
 }
 
-PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
+PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
+{
 	return sampgdk::Supports() | SUPPORTS_PROCESS_TICK;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
+PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
+{
 	rpcServer = std::thread(&runServer);
 	return sampgdk::Load(ppData);
 }
 
-PLUGIN_EXPORT void PLUGIN_CALL Unload() {
+PLUGIN_EXPORT void PLUGIN_CALL Unload()
+{
 	sampgdk::Unload();
 }
 
-PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
+PLUGIN_EXPORT void PLUGIN_CALL ProcessTick()
+{
 	sampgdk::ProcessTick();
 }

@@ -7,16 +7,12 @@
 #include <thread>
 #include <chrono>
 
-#include "DataSource.h"
+#include "GameServer.h"
 #include "MapCodeParser.h"
-#include "MapManager.h"
 
 using namespace XmlRpc;
 
 XmlRpcServer s;
-
-std::unique_ptr<DataSource> g_datasource;
-std::unique_ptr<MapManager> g_mapmanager;
 
 class Hello : public XmlRpcServerMethod
 {
@@ -42,7 +38,7 @@ public:
 		parseMapCode(params[1], dest);
 		
 		std::stringstream r;
-		r << g_mapmanager->save(dest, params[2]);
+		r << GameServer::getInstance().mapmanager.save(dest, params[2]);
 		result = r.str();
 	}
 } mapSave(&s);
@@ -55,7 +51,7 @@ public:
 	void execute(XmlRpcValue& params, XmlRpcValue& result)
 	{
 		std::stringstream r;
-		r << g_mapmanager->dispose(params[0]);
+		r << GameServer::getInstance().mapmanager.dispose(params[0]);
 		result = r.str();
 	}
 } mapDispose(&s);
@@ -68,7 +64,7 @@ public:
 	void execute(XmlRpcValue& params, XmlRpcValue& result)
 	{
 		std::stringstream r;
-		r << g_mapmanager->load(params[0]);
+		r << GameServer::getInstance().mapmanager.load(params[0]);
 		result = r.str();
 	}
 } mapLoad(&s);
@@ -81,7 +77,7 @@ public:
 	void execute(XmlRpcValue& params, XmlRpcValue& result)
 	{
 		std::stringstream r;
-		r << g_mapmanager->unload(params[0]);
+		r << GameServer::getInstance().mapmanager.unload(params[0]);
 		result = r.str();
 	}
 } mapUnload(&s);
@@ -99,13 +95,13 @@ public:
 
 		MapInfo dest;
 
-		if (g_datasource->getMapInfo(name, dest))
+		if (GameServer::getInstance().datasource.getMapInfo(name, dest))
 		{
 			r << "Name: " << dest.name << "<br/><br/>";
 			r << "Autoload: " << (dest.autoload ? "Yes" : "No") << "<br/>";
 			r << "<a href=\"rpc_map_set_autoload.php?autoload=true&name=" << dest.name << "\">Enable Autoload</a><br/>";
 			r << "<a href=\"rpc_map_set_autoload.php?autoload=false&name=" << dest.name << "\">Disable Autoload</a><br/><br/>";
-			r << "Loaded: " << (g_mapmanager->isLoaded(dest.name) ? "Yes" : "No") << "<br/>";
+			r << "Loaded: " << (GameServer::getInstance().mapmanager.isLoaded(dest.name) ? "Yes" : "No") << "<br/>";
 			r << "<a href=\"rpc_map_load.php?name=" << dest.name << "\">Load</a><br/>";
 			r << "<a href=\"rpc_map_unload.php?name=" << dest.name << "\">Unload</a><br/>";
 			r << "<br/><br/><br/>";
@@ -127,14 +123,14 @@ public:
 	void execute(XmlRpcValue& params, XmlRpcValue& result)
 	{
 		std::vector<std::pair<std::string, bool>> list;
-		g_datasource->getMapList(list, false);
+		GameServer::getInstance().datasource.getMapList(list, false);
 
 		std::stringstream r;
 
 		r << "<maplist>\n";
 		for (auto i : list)
 		{
-			r << "<map name=\"" << i.first << "\" autoload=\"" << i.second << "\" loaded=\"" << g_mapmanager->isLoaded(i.first) << "\"></map>\n";
+			r << "<map name=\"" << i.first << "\" autoload=\"" << i.second << "\" loaded=\"" << GameServer::getInstance().mapmanager.isLoaded(i.first) << "\"></map>\n";
 		}
 		r << "</maplist>\n";
 		result = r.str();
@@ -149,7 +145,7 @@ public:
 	void execute(XmlRpcValue& params, XmlRpcValue& result)
 	{
 		std::stringstream r;
-		r << g_datasource->setMapAutoLoad(params[0], params[1]);
+		r << GameServer::getInstance().datasource.setMapAutoLoad(params[0], params[1]);
 		result = r.str();
 	}
 } mapSetAutoLoad(&s);
@@ -158,9 +154,11 @@ void runServer()
 {
 	std::cout << "Wait 1 sec for samp to init.\n";
 	std::this_thread::sleep_for(std::chrono::seconds(1));
-	g_datasource.reset(new DataSource("localhost"));
-	g_mapmanager.reset(new MapManager(*g_datasource));
-	g_mapmanager->loadAutoLoadMaps();
+	// loadmap uses functions from streamer. according to samp's async plugin loading process, 
+	// we just cannot make sure when it's ready. so just wait for a while.
+	// and gameserver may be inited by other component before. because map management is
+	// independent from others, there shouldn't be multithread problems.
+	GameServer::getInstance().mapmanager.loadAutoLoadMaps();
 
 	int port = 7776;
 	XmlRpc::setVerbosity(5);

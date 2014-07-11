@@ -1,12 +1,15 @@
 #include "mongo/client/dbclient.h"
 
 #include "DataSource.h"
+#include "Account.h"
+#include "EncodingUtility.h"
 
-std::string
-	g_dbname_map = "swcuserver.map.brief",
-	g_dbname_map_obj = "swcuserver.map.detail.object",
-	g_dbname_map_veh = "swcuserver.map.detail.vehicle"
-	;
+std::string g_dbname_map = "swcuserver.map.brief";
+std::string g_dbname_map_obj = "swcuserver.map.detail.object";
+std::string g_dbname_map_veh = "swcuserver.map.detail.vehicle";
+std::string g_dbname_account = "swcuserver.account";
+std::string g_dbname_account_admin = "swcuserver.account.admin";
+std::string g_dbname_bank_transfer = "swcuserver.bank.transfer";
 
 DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnection(true))
 {
@@ -23,6 +26,7 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 
 	try
 	{
+		// Map
 		conn->createCollection(g_dbname_map);
 		conn->ensureIndex(g_dbname_map, BSON("name" << 1 << "autoload" << 1), true);
 
@@ -31,6 +35,16 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 
 		conn->createCollection(g_dbname_map_veh);
 		conn->ensureIndex(g_dbname_map_veh, BSON("mapid" << 1), false);
+
+		//Account
+		conn->createCollection(g_dbname_account);
+		conn->ensureIndex(g_dbname_account, BSON("logname" << 1), true);
+		conn->ensureIndex(g_dbname_account, BSON("password" << 1), false);
+		conn->createCollection(g_dbname_account_admin);
+
+		// Bank
+		conn->createCollection(g_dbname_bank_transfer);
+		conn->ensureIndex(g_dbname_bank_transfer, BSON("receiver" << 1 << "sender" << 1), true);
 
 		std::cout << "[DataSource] Data collections are ready.\n";
 	}
@@ -237,6 +251,215 @@ bool DataSource::setMapAutoLoad(const std::string& name, bool autoload)
 	catch (const mongo::DBException &e)
 	{
 		std::cout << "[DataSource] Map fetching failed. Caught " << e.what() << "\n";
+		return false; 
+	}
+	return true;
+}
+
+bool DataSource::loadAccount(AccountInfo& info)
+{
+	try
+	{
+		auto acc = conn->findOne(g_dbname_account, QUERY("logname" << GBKToUTF8(info.logname)));
+		if (acc.isEmpty())
+		{
+			std::cout << "[DataSource] Account " << info.logname << " not found.\n";
+			info.registered = false;
+			return false;
+		}
+		info.registered = true;
+		info.userid = acc["_id"].OID().str();
+		info.logname = UTF8ToGBK(acc["logname"].str());
+		info.nickname = UTF8ToGBK(acc["nickname"].str());
+		info.money = acc["money"].numberInt();
+		info.adminlevel = acc["adminlevel"].numberInt();
+		info.disabled = acc["disabled"].boolean();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Account fetch failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::createAccount(AccountInfo& src)
+{
+	try
+	{
+		mongo::OID userid(mongo::OID::gen());
+
+		conn->insert(g_dbname_account, BSON(
+			"_id" << userid <<
+			"logname" << GBKToUTF8(src.logname) <<
+			"password" << hash_sha1(mongo::OID::gen().str()) << // random password. possibly near to userid.
+			"jointime" << mongo::DATENOW <<
+			"nickname" << GBKToUTF8(src.nickname) <<
+			"money" << src.money <<
+			"adminlevel" << src.adminlevel <<
+			"disabled" << src.disabled
+			));
+
+		auto err = conn->getLastError();
+
+		if (err.size())
+		{
+			std::cout << "[DataSource] Error occured when inserting account object: " << err << "\n";
+			return false;
+		}
+		
+		src.userid = userid.str();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Account creating failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::authAccount(AccountInfo& account, const std::string& rawpw)
+{
+	bool r = false;
+	try
+	{
+		int count = conn->count(g_dbname_account, BSON(
+			"_id" << mongo::OID(account.userid) << "password" << hash_sha1(GBKToUTF8(rawpw))
+			));
+		r = count;
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] Account auth failed. Caught " << e.what() << "\n";
+		r = false;
+	}
+	account.loggedin = r;
+	return r;
+}
+
+bool DataSource::changePassword(const AccountInfo& account, const std::string& rawpw)
+{
+	try
+	{
+		conn->update(g_dbname_account,
+			QUERY("_id" << mongo::OID(account.userid)),
+			BSON("$set" << BSON("password" << hash_sha1(GBKToUTF8(rawpw))))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] changePassword failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::setAccountDisabled(AccountInfo& account, bool disabled)
+{
+	try
+	{
+		conn->update(g_dbname_account,
+			QUERY("_id" << mongo::OID(account.userid)),
+			BSON("$set" << BSON("disabled" << disabled))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setAccountDisabled failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	account.disabled = disabled;
+	return true;
+}
+
+bool DataSource::changeAccountLogName(AccountInfo& account, const std::string& newname)
+{
+	try
+	{
+		conn->update(g_dbname_account,
+			QUERY("_id" << mongo::OID(account.userid)),
+			BSON("$set" << BSON("logname" << GBKToUTF8(newname)))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] changeAccountLogName failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	account.logname = newname;
+	return true;
+}
+
+bool DataSource::changeAccountNickName(AccountInfo& account, const std::string& newname)
+{
+	try
+	{
+		conn->update(g_dbname_account,
+			QUERY("_id" << mongo::OID(account.userid)),
+			BSON("$set" << BSON("nickname" << GBKToUTF8(newname)))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] changeAccountNickName failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	account.nickname = newname;
+	return true;
+}
+
+bool DataSource::increaseAccountMoney(AccountInfo& account, int amount, const std::string& reason)
+{
+	try
+	{
+		auto id = mongo::OID(account.userid);
+		conn->update(g_dbname_account,
+			QUERY("_id" << id),
+			BSON("$inc" << BSON("money" << amount))
+			);
+
+		conn->insert(g_dbname_bank_transfer, BSON(
+			"receiver" << id <<
+			"sender" << mongo::OID() <<
+			"time" << mongo::DATENOW <<
+			"amount" << amount <<
+			"reason" << "system command"
+			));
+
+		auto acc = conn->findOne(g_dbname_account, QUERY("_id" << id));
+		account.money = acc["money"].numberInt();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] increaseAccountMoney failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::changeAccountAdminLevel(AccountInfo& account, const AccountInfo& oper, int level)
+{
+	try
+	{
+		auto id = mongo::OID(account.userid);
+
+		conn->update(g_dbname_account,
+			QUERY("_id" << id),
+			BSON("$set" << BSON("adminlevel" << level))
+			);
+
+		conn->insert(g_dbname_account_admin, BSON(
+			"userid" << id <<
+			"operator" << mongo::OID(oper.userid) <<
+			"time" << mongo::DATENOW <<
+			"level" << level
+			));
+
+		account.adminlevel = level;
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] changeAccountAdminLevel failed. Caught " << e.what() << "\n";
 		return false;
 	}
 	return true;

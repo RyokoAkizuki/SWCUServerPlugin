@@ -4,7 +4,7 @@ EXPORTS
 	Unload
 	ProcessTick
 	OnPlayerConnect
-	OnPlayerRequestClass
+	OnPlayerDisconnect
 	OnPlayerCommandText
 	OnDialogResponse
 

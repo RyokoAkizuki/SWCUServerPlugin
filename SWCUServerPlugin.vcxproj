@@ -144,23 +144,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Account.cpp" />
+    <ClCompile Include="AccountManager.cpp" />
     <ClCompile Include="DataSource.cpp" />
+    <ClCompile Include="EncodingUtility.cpp" />
+    <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
     <ClCompile Include="MapFunctions.cpp" />
     <ClCompile Include="MapInfo.cpp" />
     <ClCompile Include="MapManager.cpp" />
     <ClCompile Include="Plugin.cpp" />
     <ClCompile Include="RPCServer.cpp" />
+    <ClCompile Include="sha1.cpp" />
+    <ClCompile Include="DialogManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Account.h" />
+    <ClInclude Include="AccountInfo.h" />
+    <ClInclude Include="AccountManager.h" />
     <ClInclude Include="DataSource.h" />
+    <ClInclude Include="DialogManager.h" />
+    <ClInclude Include="EncodingUtility.h" />
+    <ClInclude Include="GameServer.h" />
     <ClInclude Include="MapCodeParser.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="MapFunctions.h" />
+    <ClInclude Include="sha1.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

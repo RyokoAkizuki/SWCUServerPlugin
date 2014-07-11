@@ -67,10 +67,10 @@ void showAccountOptionsDialog(Account& player)
 {
 	DialogItemList list;
 	list
-		.append("查看我的信息", [&player]() { showViewAccountDetailDialog(player); })
-		.append("更改密码", [&player]() { showChangePasswordDialog(player); })
-		.append("更改登录名", [&player]() { showSetLogNameDialog(player); })
-		.append("更改显示名", [&player]() { showSetNicknameDialog(player); })
+		.append("查看我的信息", std::bind(&showViewAccountDetailDialog, std::ref(player)))
+		.append("更改密码", std::bind(&showChangePasswordDialog, std::ref(player)))
+		.append("更改登录名", std::bind(&showSetLogNameDialog, std::ref(player)))
+		.append("更改显示名", std::bind(&showSetNicknameDialog, std::ref(player)))
 		;
 
 	GameServer::getInstance().dialogmanager.displayListDialog(

@@ -8,7 +8,7 @@
 std::map<std::string, std::vector<WeaponShopItem>> g_weaponlist = 
 {
 	{ "徒手", {
-		{ "Fist", "拳头", 0, 100, 100 },
+		//{ "Fist", "拳头", 0, 100, 100 },
 		{ "Brass Knuckles", "铜指虎", 1, 100, 100 },
 		{ "Golf Club", "高尔夫球杆", 2, 100, 100 },
 		{ "Nightstick", "警棍", 3, 100, 100 },
@@ -52,7 +52,7 @@ std::map<std::string, std::vector<WeaponShopItem>> g_weaponlist =
 		{ "RPG", "火箭发射器 (RPG)", 35, 100, 100 },
 		{ "HS Rocket", "热追踪火箭发射器", 36, 100, 100 },
 		{ "Flamethrower", "火焰喷射器", 37, 100, 100 },
-		{ "Minigun", "迷你炮机枪 (Minigun)", 38, 100, 100 }
+		//{ "Minigun", "迷你炮机枪 (Minigun)", 38, 100, 100 }
 	} },
 	
 	{ "投掷武器", {
@@ -66,12 +66,12 @@ std::map<std::string, std::vector<WeaponShopItem>> g_weaponlist =
 		{ "Spraycan", "喷漆罐", 41, 100, 100 },
 		{ "Fire Extinguisher", "灭火器", 42, 100, 100 },
 		{ "Camera", "照相机", 43, 100, 100 },
-		{ "Night Vis Goggles", "夜视镜", 44, 100, 100 },
-		{ "Thermal Goggles", "热成像夜视镜", 45, 100, 100 },
+		//{ "Night Vis Goggles", "夜视镜", 44, 100, 100 },
+		//{ "Thermal Goggles", "热成像夜视镜", 45, 100, 100 },
 		{ "Parachute", "降落伞", 46, 100, 100 }
 	} },
 	
-	{ "坑爹货", {
+	{ "其他物品", {
 		{ "Purple Dildo", "紫色的假阳具", 10, 100, 100 },
 		{ "Dildo", "白色的震动棒(小)", 11, 100, 100 },
 		{ "Vibrator", "白色的震动棒(大)", 12, 100, 100 },
@@ -99,7 +99,7 @@ void showWeaponShopCategoryDialog(Account& player, const std::string& category)
 		list.append(stream.str(), [&player, item]() {
 			player.increaseMoney(-1 * item.price, "buy weapon");
 			GivePlayerWeapon(player.getInGameID(), item.id, item.ammo);
-		}, [&player]() { showWeaponShopDialog(player); });
+		}, std::bind(&showWeaponShopDialog, std::ref(player)));
 	}
 
 	GameServer::getInstance().dialogmanager.displayListDialog(player, "购买武器", list, "购买", "返回");
@@ -112,7 +112,7 @@ void showWeaponShopDialog(Account& player)
 	for (auto type : g_weaponlist)
 	{
 		std::string category = type.first;
-		list.append(category, [&player, category]() { showWeaponShopCategoryDialog(player, category); });
+		list.append(category, std::bind(&showWeaponShopCategoryDialog, std::ref(player), category));
 	}
 
 	GameServer::getInstance().dialogmanager.displayListDialog(player, "购买武器", list, "确定", "取消");

@@ -19,7 +19,7 @@ void DialogItemList::_callback(const std::string& itemtitle, bool yes)
 	{
 		return;
 	}
-	yes ? iter->second.first : iter->second.second;
+	yes ? iter->second.first() : iter->second.second();
 }
 
 std::string DialogItemList::serialize() const

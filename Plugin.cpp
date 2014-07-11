@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <thread>
+#include <sstream>
 
 #include <plugincommon.h>
 
@@ -75,6 +76,32 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char * inputtext)
 {
 	GameServer::getInstance().dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)
+{
+	Account& acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+
+	if (playerid == clickedplayerid)
+	{
+		DialogItemList list;
+		list.append("查看我的信息", 
+		[&acc]()
+		{
+			std::stringstream str;
+			str << "ID: " << acc.getUserID() <<
+				"\n登录名: " << acc.getLogName() <<
+				"\n显示名: " << acc.getNickname() <<
+				"\n银行卡余额: " << acc.getMoney() <<
+				"\n管理员等级: " << acc.getAdminLevel();
+			GameServer::getInstance().dialogmanager.displayMessageDialog(acc,
+				"我的信息", str.str(), "确定", "");
+		});
+		GameServer::getInstance().dialogmanager.displayListDialog(
+			acc, "我的账号", list, "确定", "取消");
+	}
+
 	return true;
 }
 

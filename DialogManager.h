@@ -26,7 +26,7 @@ protected:
 public:
 	DialogItemList& append(const std::string& title,
 		const DialogMessageCallback& callbackYes,
-		const DialogMessageCallback& callbackNo = DialogMessageCallback()
+		const DialogMessageCallback& callbackNo = DialogMessageCallback([](){})
 		);
 	void _callback(const std::string& itemtitle, bool yes);
 	std::string serialize() const;
@@ -53,13 +53,13 @@ public:
 		const std::string& caption, const std::string& info,
 		const std::string& btn1, const std::string& btn2, bool password,
 		const DialogInputCallback& callbackYes,
-		const DialogInputCallback& callbackNo = DialogInputCallback());
+		const DialogInputCallback& callbackNo = DialogInputCallback([](const std::string&){}));
 
 	void displayMessageDialog(const Account& player,
 		const std::string& caption, const std::string& info,
 		const std::string& btn1, const std::string& btn2,
-		const DialogMessageCallback& callbackYes,
-		const DialogMessageCallback& callbackNo = DialogMessageCallback());
+		const DialogMessageCallback& callbackYes = DialogMessageCallback([](){}),
+		const DialogMessageCallback& callbackNo = DialogMessageCallback([](){}));
 
 	void displayListDialog(const Account& player,
 		const std::string& caption, const DialogItemList& items,

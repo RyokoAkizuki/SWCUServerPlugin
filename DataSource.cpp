@@ -12,6 +12,7 @@ std::string g_dbname_account_admin = "swcuserver.account.admin";
 std::string g_dbname_account_ban = "swcuserver.account.ban";
 std::string g_dbname_bank_transfer = "swcuserver.bank.transfer";
 std::string g_dbname_account_admin_log = "swcuserver.account.admin.log";
+std::string g_dbname_suggestion = "swcuserver.suggestion";
 
 DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnection(true))
 {
@@ -50,6 +51,9 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 		// Bank
 		conn->createCollection(g_dbname_bank_transfer);
 		conn->ensureIndex(g_dbname_bank_transfer, BSON("receiver" << 1 << "sender" << 1), false);
+
+		// Server
+		conn->createCollection(g_dbname_suggestion);
 
 		std::cout << "[DataSource] Data collections are ready.\n";
 	}
@@ -535,4 +539,23 @@ bool DataSource::hasBanRecord(const std::string& logname, const std::string& ip,
 		return false;
 	}
 	return false;
+}
+
+bool DataSource::makeSuggestion(AccountInfo& account, const std::string& content)
+{
+	try
+	{
+		conn->insert(g_dbname_suggestion, BSON(
+			mongo::GENOID <<
+			"userid" << mongo::OID(account.userid) <<
+			"time" << mongo::DATENOW <<
+			"content" << GBKToUTF8(content)
+			));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] makeSuggestion failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
 }

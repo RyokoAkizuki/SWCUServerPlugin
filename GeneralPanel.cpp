@@ -1,3 +1,5 @@
+#include <sampgdk/a_players.h>
+
 #include "GeneralPanel.h"
 
 #include "AccountDialogs.h"
@@ -6,6 +8,8 @@
 #include "StringUtility.h"
 #include "AdminCommands.h"
 
+using namespace std::placeholders;
+
 void showGeneralPanel(const std::shared_ptr<Account>& player)
 {
 	DialogItemList list;
@@ -13,6 +17,13 @@ void showGeneralPanel(const std::shared_ptr<Account>& player)
 		.append("我的账号", std::bind(&showAccountOptionsDialog, player))
 		.append("商店", std::bind(&showShopDialog, player))
 		.append("管理命令", std::bind(&showServerAdminDialog, player))
+		.append("给服务器提建议", [player]() {
+			GameServer::getInstance().dialogmanager.displayInputDialog(
+				player, "给服务器提建议", "请输入内容", "提交", "取消", false,
+				[player](const std::string& content) {
+				GameServer::getInstance().datasource.makeSuggestion(player->_getAccountInfo(), content);
+				SendClientMessage(player->getInGameID(), 0xFFFFFFFF, "[Server] 感谢您的建议!");
+			});})
 		;
 
 	GameServer::getInstance().dialogmanager.displayListDialog(

@@ -50,4 +50,6 @@ public:
 	bool addBanRecord(AccountInfo& admin, const std::string& logname, const std::string& ip, const std::string& gpci);
 	// notice: true if whether hash(gpci + ip) exists or hash(gpci + logname) exists.
 	bool hasBanRecord(const std::string& logname, const std::string& ip, const std::string& gpci);
+
+	bool makeSuggestion(AccountInfo& account, const std::string& content);
 };

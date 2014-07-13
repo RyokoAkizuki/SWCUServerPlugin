@@ -93,6 +93,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)
 {
+	if (!IsPlayerConnected(clickedplayerid))
+	{
+		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 对方不在线.");
+		return false;
+	}
+
 	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
 	if (!acc->isLoggedIn())

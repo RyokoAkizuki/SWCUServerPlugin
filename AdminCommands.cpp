@@ -172,11 +172,11 @@ ADMIN_CMD_BEGIN_AR(LockServer, "锁定服务器", 3, g_admin_server_cmd_reg)
 }
 ADMIN_CMD_END(LockServer)
 
-void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target)
+void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target, std::vector<AdminCommandBase*>& cmdlist)
 {
 	DialogItemList list;
 
-	for (auto i : g_admin_player_cmd_reg)
+	for (auto i : cmdlist)
 	{
 		if (i->requiredlevel > admin->getAdminLevel())
 		{
@@ -205,6 +205,16 @@ void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_pt
 	}
 
 	GameServer::getInstance().dialogmanager.displayListDialog(admin, STR("玩家 " << target), list, "确定", "取消");
+}
+
+void showPlayerAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target)
+{
+	showAdminDialog(admin, target, g_admin_player_cmd_reg);
+}
+
+void showServerAdminDialog(const std::shared_ptr<Account>& admin)
+{
+	showAdminDialog(admin, GameServer::getInstance().accountmanager.findAccount(-1), g_admin_server_cmd_reg);
 }
 
 void showAdminInputDialog(const std::shared_ptr<Account>& player, const std::function<void(const std::string&)>& callback)

@@ -6,7 +6,7 @@
 
 void showLoginDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "登录", "请输入密码",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "登录", "请输入大于6位的密码",
 		"登录", "退出服务器", false,
 		[player](const std::string& pw) {
 			if (!player->auth(pw))
@@ -20,7 +20,7 @@ void showLoginDialog(const std::shared_ptr<Account>& player)
 
 void showRegisterDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "注册", "请输入密码",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "注册", "请输入大于6位的密码",
 		"注册", "退出服务器", false,
 		[player](const std::string& pw) { player->create(pw); },
 		[player](const std::string& pw) { Kick(player->getInGameID()); }
@@ -29,7 +29,7 @@ void showRegisterDialog(const std::shared_ptr<Account>& player)
 
 void showChangePasswordDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "更改密码", "请输入新的密码",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "更改密码", "请输入大于6位的密码",
 		"确定", "取消", false,
 		[player](const std::string& pw) { player->changePassword(pw); }
 	);

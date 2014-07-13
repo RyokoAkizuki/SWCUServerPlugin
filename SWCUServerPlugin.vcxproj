@@ -151,6 +151,7 @@
     <ClCompile Include="AccountDialogs.cpp" />
     <ClCompile Include="EncodingUtility.cpp" />
     <ClCompile Include="GameServer.cpp" />
+    <ClCompile Include="GeneralPanel.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
     <ClCompile Include="MapFunctions.cpp" />
     <ClCompile Include="MapInfo.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="RPCServer.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="DialogManager.cpp" />
+    <ClCompile Include="Shop.cpp" />
     <ClCompile Include="Teleport.cpp" />
     <ClCompile Include="WeaponShop.cpp" />
   </ItemGroup>
@@ -175,11 +177,13 @@
     <ClInclude Include="DialogManager.h" />
     <ClInclude Include="EncodingUtility.h" />
     <ClInclude Include="GameServer.h" />
+    <ClInclude Include="GeneralPanel.h" />
     <ClInclude Include="MapCodeParser.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="MapFunctions.h" />
     <ClInclude Include="sha1.h" />
+    <ClInclude Include="Shop.h" />
     <ClInclude Include="Teleport.h" />
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="WeaponShop.h" />

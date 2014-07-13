@@ -16,6 +16,7 @@
 #include "WeaponShop.h"
 #include "StringUtility.h"
 #include "AdminCommands.h"
+#include "GeneralPanel.h"
 
 using sampgdk::logprintf;
 
@@ -100,13 +101,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 		return false;
 	}
 
-	showAdminDialog(acc, GameServer::getInstance().accountmanager.findAccount(clickedplayerid));
-
-	return true;
-
 	if (playerid == clickedplayerid)
 	{
-		showAccountOptionsDialog(acc);
+		showGeneralPanel(acc);
+	}
+	else
+	{
+		showPlayerAdminDialog(acc, GameServer::getInstance().accountmanager.findAccount(clickedplayerid));
 	}
 
 	return true;

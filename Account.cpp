@@ -127,6 +127,11 @@ bool Account::auth(const std::string& rawpw)
 
 bool Account::changePassword(const std::string& newrawpw)
 {
+	if (newrawpw.length() < 6)
+	{
+		SendClientMessage(info.ingameid, 0xFFFFFFFF, "[Account] 请使用大于6位的密码.");
+		return false;
+	}
 	if (datasrc.changePassword(info, newrawpw))
 	{
 		SendClientMessage(info.ingameid, 0xFFFFFFFF, "[Account] 密码更改成功.");

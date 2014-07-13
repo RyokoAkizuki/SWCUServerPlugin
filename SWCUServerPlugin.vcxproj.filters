@@ -69,6 +69,12 @@
     <ClCompile Include="AdminCommands.cpp">
       <Filter>Admin</Filter>
     </ClCompile>
+    <ClCompile Include="GeneralPanel.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shop.cpp">
+      <Filter>Shop</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapManager.h">
@@ -117,6 +123,12 @@
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="AdminCommands.h">
       <Filter>Admin</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneralPanel.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shop.h">
+      <Filter>Shop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

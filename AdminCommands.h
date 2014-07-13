@@ -30,5 +30,7 @@ public:
 	virtual void executeATR(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target, const std::string& reason) {}
 };
 
-void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target);
+void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target, std::vector<AdminCommandBase*>& cmdlist);
+void showPlayerAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target);
+void showServerAdminDialog(const std::shared_ptr<Account>& admin);
 void showAdminInputDialog(const std::shared_ptr<Account>& player, const std::function<void(const std::string&)>& callback);

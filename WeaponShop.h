@@ -2,9 +2,6 @@
 
 #include "Account.h"
 
-#include <map>
-#include <vector>
-
 struct WeaponShopItem
 {
 	const char* enname;
@@ -16,4 +13,3 @@ struct WeaponShopItem
 
 void showWeaponShopCategoryDialog(const std::shared_ptr<Account>& player, const std::string& category);
 void showWeaponShopDialog(const std::shared_ptr<Account>& player);
-

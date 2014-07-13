@@ -44,4 +44,10 @@ public:
 	bool increaseAccountMoney(AccountInfo& account, int amount, const std::string& reason);
 	// Notice: this will update adminlevel value in accountinfo.
 	bool changeAccountAdminLevel(AccountInfo& account, const AccountInfo& oper, int level);
+
+	bool adminOperationLog(const std::string& operid, const std::string& effectedid, const std::string& operation, const std::string& msg);
+
+	bool addBanRecord(AccountInfo& admin, const std::string& logname, const std::string& ip, const std::string& gpci);
+	// notice: true if whether hash(gpci + ip) exists or hash(gpci + logname) exists.
+	bool hasBanRecord(const std::string& logname, const std::string& ip, const std::string& gpci);
 };

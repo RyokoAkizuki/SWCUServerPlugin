@@ -32,8 +32,19 @@ public:
 	bool changePassword(const std::string& newrawpw);
 
 	int getAdminLevel() const;
-	bool setAdminLevel(AccountInfo& operatorAccount, int level);
+	bool setAdminLevel(const std::shared_ptr<Account>& operatorAccount, int level);
+
+	bool isDisabled() const;
+	bool setDisabled(bool disabled);
+
+	// In-Game info
 
 	int getInGameID() const;
 	uint64_t getSessionID() const;
+	bool isMuted() const;
+	bool isFreezed() const;
+	void setMuted(bool muted);
+	void setFreezed(bool freezed);
+
+	AccountInfo& _getAccountInfo();
 };

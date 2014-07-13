@@ -3,6 +3,7 @@
 #include <functional>
 #include <map>
 #include <set>
+#include <vector>
 
 #include "Account.h"
 #include "AccountManager.h"
@@ -22,6 +23,7 @@ class DialogItemList
 {
 protected:
 	std::map<std::string, std::pair<DialogMessageCallback, DialogMessageCallback>> listitem;
+	std::vector<std::string> itemname;
 
 public:
 	DialogItemList& append(const std::string& title,
@@ -49,19 +51,19 @@ protected:
 public:
 	DialogManager(AccountManager& accountmgr);
 
-	void displayInputDialog(const Account& player,
+	void displayInputDialog(const std::shared_ptr<Account>& player,
 		const std::string& caption, const std::string& info,
 		const std::string& btn1, const std::string& btn2, bool password,
 		const DialogInputCallback& callbackYes,
 		const DialogInputCallback& callbackNo = DialogInputCallback([](const std::string&){}));
 
-	void displayMessageDialog(const Account& player,
+	void displayMessageDialog(const std::shared_ptr<Account>& player,
 		const std::string& caption, const std::string& info,
 		const std::string& btn1, const std::string& btn2,
 		const DialogMessageCallback& callbackYes = DialogMessageCallback([](){}),
 		const DialogMessageCallback& callbackNo = DialogMessageCallback([](){}));
 
-	void displayListDialog(const Account& player,
+	void displayListDialog(const std::shared_ptr<Account>& player,
 		const std::string& caption, const DialogItemList& items,
 		const std::string& btn1, const std::string& btn2);
 

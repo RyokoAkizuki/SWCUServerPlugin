@@ -9,7 +9,9 @@ std::string g_dbname_map_obj = "swcuserver.map.detail.object";
 std::string g_dbname_map_veh = "swcuserver.map.detail.vehicle";
 std::string g_dbname_account = "swcuserver.account";
 std::string g_dbname_account_admin = "swcuserver.account.admin";
+std::string g_dbname_account_ban = "swcuserver.account.ban";
 std::string g_dbname_bank_transfer = "swcuserver.bank.transfer";
+std::string g_dbname_account_admin_log = "swcuserver.account.admin.log";
 
 DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnection(true))
 {
@@ -42,6 +44,8 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 		conn->ensureIndex(g_dbname_account, BSON("logname" << 1), true);
 		conn->ensureIndex(g_dbname_account, BSON("password" << 1), false);
 		conn->createCollection(g_dbname_account_admin);
+		conn->createCollection(g_dbname_account_ban);
+		conn->ensureIndex(g_dbname_account_ban, BSON("hash1" << 1 << "hash2" << 1), false);
 
 		// Bank
 		conn->createCollection(g_dbname_bank_transfer);
@@ -327,7 +331,7 @@ bool DataSource::authAccount(AccountInfo& account, const std::string& rawpw)
 		int count = conn->count(g_dbname_account, BSON(
 			"_id" << mongo::OID(account.userid) << "password" << hash_sha1(GBKToUTF8(rawpw))
 			));
-		r = count;
+		r = (count != 0);
 	}
 	catch (const mongo::DBException &e)
 	{
@@ -451,6 +455,7 @@ bool DataSource::changeAccountAdminLevel(AccountInfo& account, const AccountInfo
 			);
 
 		conn->insert(g_dbname_account_admin, BSON(
+			mongo::GENOID <<
 			"userid" << id <<
 			"operator" << mongo::OID(oper.userid) <<
 			"time" << mongo::DATENOW <<
@@ -465,4 +470,68 @@ bool DataSource::changeAccountAdminLevel(AccountInfo& account, const AccountInfo
 		return false;
 	}
 	return true;
+}
+
+bool DataSource::adminOperationLog(const std::string& operid, const std::string& effectedid, const std::string& operation, const std::string& msg)
+{
+	try
+	{
+		conn->insert(g_dbname_account_admin_log, BSON(
+			mongo::GENOID <<
+			"operator" << mongo::OID(operid) <<
+			"effected" << mongo::OID(effectedid) <<
+			"operation" << GBKToUTF8(operation) <<
+			"message" << GBKToUTF8(msg) <<
+			"time" << mongo::DATENOW
+			));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] adminOperationLog failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::addBanRecord(AccountInfo& admin, const std::string& logname, const std::string& ip, const std::string& gpci)
+{
+	try
+	{
+		conn->insert(g_dbname_account_ban, BSON(
+			mongo::GENOID <<
+			"hash1" << hash_sha1(gpci + GBKToUTF8(logname)) <<
+			"hash2" << hash_sha1(gpci + ip) <<
+			"gpci" << gpci <<
+			"logname" << GBKToUTF8(logname) <<
+			"ip" << ip <<
+			"time" << mongo::DATENOW <<
+			"admin" << admin.userid
+			));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] addBanRecord failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::hasBanRecord(const std::string& logname, const std::string& ip, const std::string& gpci)
+{
+	try
+	{
+		int count = conn->count(g_dbname_account_ban, BSON(
+			"$or" << BSON_ARRAY(
+				BSON("hash1" << hash_sha1(gpci + GBKToUTF8(logname))) <<
+				BSON("hash2" << hash_sha1(gpci + ip))
+			)
+		));
+		return count != 0;
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] hasBanRecord failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return false;
 }

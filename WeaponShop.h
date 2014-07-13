@@ -14,6 +14,6 @@ struct WeaponShopItem
 	int ammo;
 };
 
-void showWeaponShopCategoryDialog(Account& player, const std::string& category);
-void showWeaponShopDialog(Account& player);
+void showWeaponShopCategoryDialog(const std::shared_ptr<Account>& player, const std::string& category);
+void showWeaponShopDialog(const std::shared_ptr<Account>& player);
 

@@ -146,8 +146,9 @@
   <ItemGroup>
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="AccountManager.cpp" />
+    <ClCompile Include="AdminCommands.cpp" />
     <ClCompile Include="DataSource.cpp" />
-    <ClCompile Include="DialogDefinitions.cpp" />
+    <ClCompile Include="AccountDialogs.cpp" />
     <ClCompile Include="EncodingUtility.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="RPCServer.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="DialogManager.cpp" />
+    <ClCompile Include="Teleport.cpp" />
     <ClCompile Include="WeaponShop.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -165,7 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Account.h" />
-    <ClInclude Include="DialogDefinitions.h" />
+    <ClInclude Include="AdminCommands.h" />
+    <ClInclude Include="AccountDialogs.h" />
     <ClInclude Include="AccountInfo.h" />
     <ClInclude Include="AccountManager.h" />
     <ClInclude Include="DataSource.h" />
@@ -177,7 +180,8 @@
     <ClInclude Include="MapManager.h" />
     <ClInclude Include="MapFunctions.h" />
     <ClInclude Include="sha1.h" />
-    <ClInclude Include="Shop.h" />
+    <ClInclude Include="Teleport.h" />
+    <ClInclude Include="StringUtility.h" />
     <ClInclude Include="WeaponShop.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

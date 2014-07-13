@@ -4,10 +4,18 @@
 
 AccountManager::AccountManager(DataSource& db) : datasource(db)
 {
-	accounts.insert(std::make_pair(-1, Account(AccountInfo(), datasource)));
+	_buildFakeAccount();
 }
 
-Account& AccountManager::findAccount(int ingameid)
+void AccountManager::_buildFakeAccount()
+{
+	AccountInfo info;
+	info.userid = "000000000000000000000000";
+
+	accounts.insert(std::make_pair(-1, std::make_shared<Account>(info, datasource)));
+}
+
+std::shared_ptr<Account> AccountManager::findAccount(int ingameid)
 {
 	auto iter = accounts.find(ingameid);
 	if (iter == accounts.end()) // not found
@@ -15,13 +23,14 @@ Account& AccountManager::findAccount(int ingameid)
 		iter = accounts.find(-1); // find the fake one
 		if (iter == accounts.end()) // fake one is missing
 		{
-			iter = accounts.insert(std::make_pair(-1, Account(AccountInfo(), datasource))).first;
+			_buildFakeAccount();
+			return accounts.find(-1)->second;
 		}
 	}
 	return iter->second;
 }
 
-Account& AccountManager::enterServer(int ingameid)
+std::shared_ptr<Account> AccountManager::enterServer(int ingameid)
 {
 	AccountInfo info;
 	info.ingameid = ingameid;
@@ -30,7 +39,7 @@ Account& AccountManager::enterServer(int ingameid)
 	GetPlayerName(info.ingameid, name, 24);
 	info.logname = name;
 
-	auto r = accounts.insert(std::make_pair(ingameid, Account(info, datasource)));
+	auto r = accounts.insert(std::make_pair(ingameid, std::make_shared<Account>(info, datasource)));
 	if (r.first == accounts.end())
 	{
 		std::cout << "[AccountManager] Warning: enterServer failed.\n";

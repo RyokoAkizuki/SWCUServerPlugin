@@ -81,7 +81,7 @@ std::map<std::string, std::vector<WeaponShopItem>> g_weaponlist =
 	} }
 };
 
-void showWeaponShopCategoryDialog(Account& player, const std::string& category)
+void showWeaponShopCategoryDialog(const std::shared_ptr<Account>& player, const std::string& category)
 {
 	DialogItemList list;
 	auto iter = g_weaponlist.find(category);
@@ -96,23 +96,23 @@ void showWeaponShopCategoryDialog(Account& player, const std::string& category)
 	{
 		std::stringstream stream;
 		stream << item.cnname << " 价格: " << item.price << " 弹药: " << item.ammo;
-		list.append(stream.str(), [&player, item]() {
-			player.increaseMoney(-1 * item.price, "buy weapon");
-			GivePlayerWeapon(player.getInGameID(), item.id, item.ammo);
-		}, std::bind(&showWeaponShopDialog, std::ref(player)));
+		list.append(stream.str(), [player, item]() {
+			player->increaseMoney(-1 * item.price, "buy weapon");
+			GivePlayerWeapon(player->getInGameID(), item.id, item.ammo);
+		}, std::bind(&showWeaponShopDialog, player));
 	}
 
 	GameServer::getInstance().dialogmanager.displayListDialog(player, "购买武器", list, "购买", "返回");
 }
 
-void showWeaponShopDialog(Account& player)
+void showWeaponShopDialog(const std::shared_ptr<Account>& player)
 {
 	DialogItemList list;
 
 	for (auto type : g_weaponlist)
 	{
 		std::string category = type.first;
-		list.append(category, std::bind(&showWeaponShopCategoryDialog, std::ref(player), category));
+		list.append(category, std::bind(&showWeaponShopCategoryDialog, player, category));
 	}
 
 	GameServer::getInstance().dialogmanager.displayListDialog(player, "购买武器", list, "确定", "取消");

@@ -1,6 +1,6 @@
 #include <sampgdk/a_players.h>
-#include <sstream>
 
+#include "StringUtility.h"
 #include "Account.h"
 
 Account::Account(const AccountInfo& ainfo, DataSource& db) : info(ainfo), datasrc(db)
@@ -145,18 +145,35 @@ int Account::getAdminLevel() const
 	return info.adminlevel;
 }
 
-bool Account::setAdminLevel(AccountInfo& operatorAccount, int level)
+bool Account::setAdminLevel(const std::shared_ptr<Account>& operatorAccount, int level)
 {
-	if (datasrc.changeAccountAdminLevel(info, operatorAccount, level))
+	if (datasrc.changeAccountAdminLevel(info, operatorAccount->info, level))
 	{
-		std::stringstream str;
-		str << "[Account] " << info.nickname << "(ID: " << info.userid << ") 的管理员等级被更改为 " << level << ".";
-		SendClientMessageToAll(0xFFFFFFFF, str.str().c_str());
+		SendClientMessageToAll(0xFFFFFFFF, STR("[Account] " << info.logname << UID(this) << " 的管理员等级被更改为 " << level << ".").c_str());
 		return true;
 	}
 	else
 	{
 		std::cout << "[Account] Warning: changeAccountAdminLevel Failed.\n";
+		return false;
+	}
+}
+
+bool Account::isDisabled() const
+{
+	return info.disabled;
+}
+
+bool Account::setDisabled(bool disabled)
+{
+	if (datasrc.setAccountDisabled(info, disabled))
+	{
+		SendClientMessageToAll(0xFFFFFFFF, STR("[Account] 登录账号 " << info.logname << " 被" << (disabled ? "封禁" : "解禁") << ".").c_str());
+		return true;
+	}
+	else
+	{
+		std::cout << "[Account] Warning: setDisabled Failed.\n";
 		return false;
 	}
 }
@@ -169,4 +186,29 @@ int Account::getInGameID() const
 uint64_t Account::getSessionID() const
 {
 	return info.session;
+}
+
+bool Account::isMuted() const
+{
+	return info.muted;
+}
+
+bool Account::isFreezed() const
+{
+	return info.freezed;
+}
+
+void Account::setMuted(bool muted)
+{
+	info.muted = muted;
+}
+
+void Account::setFreezed(bool freezed)
+{
+	info.freezed = freezed;
+}
+
+AccountInfo& Account::_getAccountInfo()
+{
+	return info;
 }

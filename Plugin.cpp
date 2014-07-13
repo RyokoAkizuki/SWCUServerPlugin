@@ -12,8 +12,10 @@
 #include <sampgdk/sdk.h>
 
 #include "GameServer.h"
-#include "DialogDefinitions.h"
+#include "AccountDialogs.h"
 #include "WeaponShop.h"
+#include "StringUtility.h"
+#include "AdminCommands.h"
 
 using sampgdk::logprintf;
 
@@ -30,8 +32,32 @@ void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
-	Account& acc = GameServer::getInstance().accountmanager.enterServer(playerid);
-	acc.isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
+	char ip[16];
+	GetPlayerIp(playerid, ip, 16);
+	char gpcidest[25];
+	gpci(playerid, gpcidest, 25);
+	char logname[24];
+	GetPlayerName(playerid, logname, 24);
+
+	if (GameServer::getInstance().datasource.hasBanRecord(logname, ip, gpcidest))
+	{
+		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你的客户端已被封禁.");
+		Kick(playerid);
+		return false;
+	}
+
+	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.enterServer(playerid);
+
+	if (acc->isDisabled())
+	{
+		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你的账号已被封禁.");
+		Kick(playerid);
+		return false;
+	}
+
+	SendClientMessageToAll(0xFFFFFFFF, STR(acc->getLogName() << UID(acc) << "进入服务器.").c_str());
+
+	acc->isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
 	return true;
 }
 
@@ -43,18 +69,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext)
 {
-	Account& acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
-	if (strcmp(cmdtext, "/car") == 0) {
-		float pos[3];
-		GetPlayerPos(playerid, &pos[0], &pos[1], &pos[2]);
-		CreateVehicle(411, pos[0], pos[1], pos[2], 0.0, 1, 1, 120);
-		return true;
-	}
 	if (strcmp(cmdtext, "/weapon") == 0) {
 		showWeaponShopDialog(acc);
 		return true;
 	}
+
 	return false;
 }
 
@@ -66,13 +87,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)
 {
-	Account& acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
-	if (!acc.isLoggedIn())
+	if (!acc->isLoggedIn())
 	{
 		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你没有登录.");
 		return false;
 	}
+
+	showAdminDialog(acc, GameServer::getInstance().accountmanager.findAccount(clickedplayerid));
+
+	return true;
 
 	if (playerid == clickedplayerid)
 	{

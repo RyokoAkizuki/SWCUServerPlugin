@@ -16,6 +16,12 @@
     <Filter Include="Shop">
       <UniqueIdentifier>{910dfbcf-4816-4921-8398-87c321937991}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Admin">
+      <UniqueIdentifier>{49f102a8-ad2d-4b9e-8a84-3fbbd8639604}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Teleport">
+      <UniqueIdentifier>{47874d59-1674-4892-800d-4b222e1a1046}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MapFunctions.cpp">
@@ -51,11 +57,17 @@
     <ClCompile Include="AccountManager.cpp">
       <Filter>Account</Filter>
     </ClCompile>
-    <ClCompile Include="DialogDefinitions.cpp">
-      <Filter>UI</Filter>
-    </ClCompile>
     <ClCompile Include="WeaponShop.cpp">
       <Filter>Shop</Filter>
+    </ClCompile>
+    <ClCompile Include="AccountDialogs.cpp">
+      <Filter>Account</Filter>
+    </ClCompile>
+    <ClCompile Include="Teleport.cpp">
+      <Filter>Teleport</Filter>
+    </ClCompile>
+    <ClCompile Include="AdminCommands.cpp">
+      <Filter>Admin</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -93,14 +105,18 @@
     <ClInclude Include="AccountInfo.h">
       <Filter>Account</Filter>
     </ClInclude>
-    <ClInclude Include="Shop.h">
-      <Filter>Shop</Filter>
-    </ClInclude>
-    <ClInclude Include="DialogDefinitions.h">
-      <Filter>UI</Filter>
-    </ClInclude>
     <ClInclude Include="WeaponShop.h">
       <Filter>Shop</Filter>
+    </ClInclude>
+    <ClInclude Include="AccountDialogs.h">
+      <Filter>Account</Filter>
+    </ClInclude>
+    <ClInclude Include="Teleport.h">
+      <Filter>Teleport</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtility.h" />
+    <ClInclude Include="AdminCommands.h">
+      <Filter>Admin</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

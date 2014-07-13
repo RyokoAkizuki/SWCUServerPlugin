@@ -79,7 +79,7 @@ bool MapManager::unload(const std::string& name)
 
 bool MapManager::isLoaded(const std::string& name)
 {
-	return loadedmap.count(name);
+	return loadedmap.count(name) != 0;
 }
 
 void MapManager::loadAutoLoadMaps()

@@ -15,6 +15,10 @@ DialogItemList& DialogItemList::append(const std::string& title,
 
 void DialogItemList::_callback(const std::string& itemtitle, bool yes)
 {
+	if (itemname.empty())
+	{
+		return;
+	}
 	auto iter = listitem.find(itemtitle);
 	if (iter == listitem.end())
 	{
@@ -26,9 +30,16 @@ void DialogItemList::_callback(const std::string& itemtitle, bool yes)
 std::string DialogItemList::serialize() const
 {
 	std::stringstream stream;
-	for (auto& i : itemname)
+	if (itemname.empty())
 	{
-		stream << i << "\n";
+		stream << "<无可用项目>\n";
+	}
+	else
+	{
+		for (auto& i : itemname)
+		{
+			stream << i << "\n";
+		}
 	}
 	return stream.str();
 }

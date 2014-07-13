@@ -75,6 +75,7 @@
     <ClCompile Include="Shop.cpp">
       <Filter>Shop</Filter>
     </ClCompile>
+    <ClCompile Include="SAMPFunctionUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapManager.h">
@@ -130,6 +131,7 @@
     <ClInclude Include="Shop.h">
       <Filter>Shop</Filter>
     </ClInclude>
+    <ClInclude Include="SAMPFunctionUtility.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def" />

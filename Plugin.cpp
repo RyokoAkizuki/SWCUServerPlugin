@@ -17,6 +17,7 @@
 #include "StringUtility.h"
 #include "AdminCommands.h"
 #include "GeneralPanel.h"
+#include "SAMPFunctionUtility.h"
 
 using sampgdk::logprintf;
 
@@ -40,14 +41,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
-	char ip[16];
-	GetPlayerIp(playerid, ip, 16);
-	char gpcidest[25];
-	gpci(playerid, gpcidest, 25);
-	char logname[24];
-	GetPlayerName(playerid, logname, 24);
-
-	if (GameServer::getInstance().datasource.hasBanRecord(logname, ip, gpcidest))
+	if (GameServer::getInstance().datasource.hasBanRecord(getPlayerNameFixed(playerid), getPlayerIP(playerid), getGPCI(playerid)))
 	{
 		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你的客户端已被封禁.");
 		Kick(playerid);
@@ -63,6 +57,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 		return false;
 	}
 
+	SendClientMessage(playerid, 0xFFFFFFFF, "[Server] 注意: 原管理命令已全部取消, 请按Tab键打开积分板双击玩家名称查看命令.");
+
 	acc->isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
 	return true;
 }
@@ -75,12 +71,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext)
 {
-	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
-
-	if (strcmp(cmdtext, "/weapon") == 0) {
-		showWeaponShopDialog(acc);
-		return true;
-	}
+	// std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
 	return false;
 }

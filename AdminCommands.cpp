@@ -7,6 +7,7 @@
 #include "AdminCommands.h"
 #include "StringUtility.h"
 #include "Teleport.h"
+#include "SAMPFunctionUtility.h"
 
 #define ADMIN_CMD_BEGIN_ATR(name, cnname, reqlv, reg) \
 class __AdminCmd##name : public AdminCommandBase{ public: __AdminCmd##name() : AdminCommandBase(cnname, reqlv, ADMIN_TARGET_REASON, reg) {} virtual void executeATR(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target, const std::string& reason)
@@ -133,11 +134,7 @@ ADMIN_CMD_END(KickPlayer)
 ADMIN_CMD_BEGIN_ATR(BanPlayer, "封禁", 3, g_admin_player_cmd_reg)
 {
 	target->setDisabled(true);
-	char ip[16];
-	GetPlayerIp(target->getInGameID(), ip, 16);
-	char gpcidest[25];
-	gpci(target->getInGameID(), gpcidest, 25);
-	GameServer::getInstance().datasource.addBanRecord(admin->_getAccountInfo(), target->getLogName(), ip, gpcidest);
+	GameServer::getInstance().datasource.addBanRecord(admin->_getAccountInfo(), target->getLogName(), getPlayerIP(target->getInGameID()), getGPCI(target->getInGameID()));
 	Kick(target->getInGameID());
 	SendClientMessageToAll(0xFFFFFFFF, STR("[Admin] 管理员 " << admin->getLogName() << UID(admin) <<
 		" 封禁了 " << target->getLogName() << UID(target) << ". 原因: " << reason).c_str());

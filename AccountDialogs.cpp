@@ -6,7 +6,7 @@
 
 void showLoginDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "µÇÂ¼", "ÇëÊäÈë´óÓÚ6Î»µÄÃÜÂë",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "µÇÂ¼", "ÇëÊäÈëÃÜÂë",
 		"µÇÂ¼", "ÍË³ö·þÎñÆ÷", false,
 		[player](const std::string& pw) {
 			if (!player->auth(pw))

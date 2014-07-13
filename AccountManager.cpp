@@ -1,6 +1,7 @@
 #include "AccountManager.h"
 #include <ctime>
 #include <sampgdk/a_players.h>
+#include "SAMPFunctionUtility.h"
 #include "StringUtility.h"
 
 AccountManager::AccountManager(DataSource& db) : datasource(db)
@@ -36,9 +37,7 @@ std::shared_ptr<Account> AccountManager::enterServer(int ingameid)
 	AccountInfo info;
 	info.ingameid = ingameid;
 	info.session = clock();
-	char name[24];
-	GetPlayerName(info.ingameid, name, 24);
-	info.logname = name;
+	info.logname = getPlayerNameFixed(info.ingameid);
 
 	auto r = accounts.insert(std::make_pair(ingameid, std::make_shared<Account>(info, datasource)));
 	if (r.first == accounts.end())

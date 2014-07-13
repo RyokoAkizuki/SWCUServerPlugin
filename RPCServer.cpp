@@ -3,9 +3,6 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
-#include <memory>
-#include <thread>
-#include <chrono>
 
 #include "GameServer.h"
 #include "MapCodeParser.h"
@@ -152,14 +149,6 @@ public:
 
 void runServer()
 {
-	std::cout << "Wait 1 sec for samp to init.\n";
-	std::this_thread::sleep_for(std::chrono::seconds(1));
-	// loadmap uses functions from streamer. according to samp's async plugin loading process, 
-	// we just cannot make sure when it's ready. so just wait for a while.
-	// and gameserver may be inited by other component before. because map management is
-	// independent from others, there shouldn't be multithread problems.
-	GameServer::getInstance().mapmanager.loadAutoLoadMaps();
-
 	int port = 7776;
 	XmlRpc::setVerbosity(5);
 	s.bindAndListen(port);

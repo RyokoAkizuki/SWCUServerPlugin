@@ -30,6 +30,13 @@ void SAMPGDK_CALL PrintTickCountTimer(int timerid, void *params)
 	logprintf("Tick count: %d", GetTickCount());
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit()
+{
+	rpcServer = std::thread(&runServer);
+	GameServer::getInstance().mapmanager.loadAutoLoadMaps();
+	return true;
+}
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 {
 	char ip[16];
@@ -54,8 +61,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 		Kick(playerid);
 		return false;
 	}
-
-	SendClientMessageToAll(0xFFFFFFFF, STR(acc->getLogName() << UID(acc) << "进入服务器.").c_str());
 
 	acc->isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
 	return true;
@@ -107,6 +112,25 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 	return true;
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char * text)
+{
+	if (GameServer::getInstance().accountmanager.findAccount(playerid)->isFreezed())
+	{
+		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] 你已被禁言.");
+		return false;
+	}
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
+{
+	if (GameServer::getInstance().accountmanager.findAccount(playerid)->isFreezed())
+	{
+		return false;
+	}
+	return true;
+}
+
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 {
 	return sampgdk::Supports() | SUPPORTS_PROCESS_TICK;
@@ -114,7 +138,6 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports()
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData)
 {
-	rpcServer = std::thread(&runServer);
 	return sampgdk::Load(ppData);
 }
 

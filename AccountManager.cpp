@@ -1,6 +1,7 @@
 #include "AccountManager.h"
 #include <ctime>
 #include <sampgdk/a_players.h>
+#include "StringUtility.h"
 
 AccountManager::AccountManager(DataSource& db) : datasource(db)
 {
@@ -45,10 +46,19 @@ std::shared_ptr<Account> AccountManager::enterServer(int ingameid)
 		std::cout << "[AccountManager] Warning: enterServer failed.\n";
 		return findAccount(-1);
 	}
+
+	SendClientMessageToAll(0xFFFFFFFF, STR(r.first->second->getLogName() << UID(r.first->second) << "进入服务器.").c_str());
+
 	return r.first->second;
 }
 
 void AccountManager::exitServer(int ingameid)
 {
-	accounts.erase(ingameid);
+	auto acc = accounts.find(ingameid);
+	if (acc == accounts.end())
+	{
+		return;
+	}
+	SendClientMessageToAll(0xFFFFFFFF, STR(acc->second->getLogName() << UID(acc->second) << "离开服务器.").c_str());
+	accounts.erase(acc);
 }

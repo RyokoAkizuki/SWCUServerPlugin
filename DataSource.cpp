@@ -314,6 +314,7 @@ bool DataSource::createAccount(AccountInfo& src)
 		}
 		
 		src.userid = userid.str();
+		src.loggedin = true;
 	}
 	catch (const mongo::DBException &e)
 	{

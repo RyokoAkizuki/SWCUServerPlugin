@@ -115,7 +115,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char * text)
 {
-	if (GameServer::getInstance().accountmanager.findAccount(playerid)->isFreezed())
+	if (GameServer::getInstance().accountmanager.findAccount(playerid)->isMuted())
 	{
 		SendClientMessage(playerid, 0xFFFFFFFF, "[Account] ÄãÒÑ±»½ûÑÔ.");
 		return false;

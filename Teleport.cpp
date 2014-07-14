@@ -18,8 +18,12 @@ void teleportToPos(int playerid, float x, float y, float z, int interior, int vi
 	if (IsPlayerInAnyVehicle(playerid) && GetPlayerVehicleSeat(playerid) == 0 /* driver */)
 	{
 		int vid = GetPlayerVehicleID(playerid);
+		SetVehicleVirtualWorld(vid, virtualworld);
+		LinkVehicleToInterior(vid, interior);
+		SetVehiclePos(vid, x, y, z);
+		// NOTICE: Here uses a BIG loop.
 		int max = GetMaxPlayers();
-		for (int i = 0; i < max; ++max)
+		for (int i = 0; i < max; ++i)
 		{
 			if (GetPlayerVehicleID(i) == vid)
 			{

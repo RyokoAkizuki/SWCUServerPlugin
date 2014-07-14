@@ -57,7 +57,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid)
 		return false;
 	}
 
-	SendClientMessage(playerid, 0xFFFFFFFF, "[Server] 注意: 原管理命令已全部取消, 请按Tab键打开积分板双击玩家名称查看命令.");
+	SendClientMessage(playerid, 0xFFFFFFFF, "[Server] 注意: 原管理命令已全部取消, 请按[Tab]键打开积分板双击玩家名称查看命令.");
+	SendClientMessage(playerid, 0xFFFFFFFF, "[Server] Notice: Old commands are deprecated. Please press [Tab] and click player to view function menu.");
 
 	acc->isRegistered() ? showLoginDialog(acc) : showRegisterDialog(acc);
 	return true;

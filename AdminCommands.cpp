@@ -33,6 +33,19 @@ using namespace std::placeholders;
 
 // Player
 
+ADMIN_CMD_BEGIN_AT(ViewProfile, "查看资料", 0, g_admin_player_cmd_reg)
+{
+	std::stringstream str;
+	str << "ID: " << target->getUserID() <<
+		"\n登录名: " << target->getLogName() <<
+		"\n显示名: " << target->getNickname() <<
+		"\n银行卡余额: " << target->getMoney() <<
+		"\n管理员等级: " << target->getAdminLevel();
+	GameServer::getInstance().dialogmanager.displayMessageDialog(admin,
+		STR(target->getLogName() << " 的资料").c_str(), str.str(), "确定", "");
+}
+ADMIN_CMD_END(ViewProfile)
+
 ADMIN_CMD_BEGIN_AT(PM, "密语", 0, g_admin_player_cmd_reg)
 {
 	GameServer::getInstance().dialogmanager.displayInputDialog(admin, "发送密语", "请输入消息", "发送", "取消", false,
@@ -201,7 +214,7 @@ void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_pt
 		}
 	}
 
-	GameServer::getInstance().dialogmanager.displayListDialog(admin, STR("玩家 " << target), list, "确定", "取消");
+	GameServer::getInstance().dialogmanager.displayListDialog(admin, STR("玩家 " << target->getLogName()), list, "确定", "取消");
 }
 
 void showPlayerAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target)

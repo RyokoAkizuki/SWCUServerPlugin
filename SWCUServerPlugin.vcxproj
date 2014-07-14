@@ -66,16 +66,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SWCU\resources\sampgdk-4.0.0-beta-win32\lib;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dbg_on\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta2-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\SWCU\resources\sampgdk-4.0.0-beta2-win32\lib;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dbg_on\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
     <LibraryPath>E:\SWCU\resources\sampgdk-4.0.0-beta-win32\lib;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\use-system-boost;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SWCU\resources\sampgdk-4.0.0-beta-win32\lib;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta2-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
+    <LibraryPath>E:\SWCU\resources\sampgdk-4.0.0-beta2-win32\lib;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>

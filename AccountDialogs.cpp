@@ -6,7 +6,7 @@
 
 void showLoginDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "µÇÂ¼", "ÇëÊäÈëÃÜÂë",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "µÇÂ¼ Login", "ÇëÊäÈëÃÜÂë\nPlease enter your password\n[OK] [Exit]",
 		"µÇÂ¼", "ÍË³ö·þÎñÆ÷", false,
 		[player](const std::string& pw) {
 			if (!player->auth(pw))
@@ -20,7 +20,7 @@ void showLoginDialog(const std::shared_ptr<Account>& player)
 
 void showRegisterDialog(const std::shared_ptr<Account>& player)
 {
-	GameServer::getInstance().dialogmanager.displayInputDialog(player, "×¢²á", "ÇëÊäÈë´óÓÚ6Î»µÄÃÜÂë",
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "×¢²á Register", "ÇëÊäÈë´óÓÚ6Î»µÄÃÜÂë\nPlease use a password longer than 6 chars.\n[OK] [Exit]",
 		"×¢²á", "ÍË³ö·þÎñÆ÷", false,
 		[player](const std::string& pw) { player->create(pw); },
 		[player](const std::string& pw) { Kick(player->getInGameID()); }

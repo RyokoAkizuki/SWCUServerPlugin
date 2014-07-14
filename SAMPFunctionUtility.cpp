@@ -10,7 +10,7 @@ std::string getPlayerNameFixed(int playerid)
 	GetPlayerName(playerid, temp, 24 * 4);
 	for (int i = 0; (i < 24 * 4 && temp[i] != 0); ++i)
 	{
-		if (((i + 1) % 4) == 0)
+		if (temp[i] != -1)
 		{
 			realname.push_back(temp[i]);
 		}

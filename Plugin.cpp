@@ -79,8 +79,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char * inputtext)
 {
-	GameServer::getInstance().dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
-	return true;
+	return GameServer::getInstance().dialogmanager._callback(playerid, dialogid, response, listitem, inputtext);
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source)

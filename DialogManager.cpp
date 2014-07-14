@@ -87,19 +87,19 @@ void DialogManager::displayListDialog(const std::shared_ptr<Account>& player,
 	listdialog.insert(std::make_pair(id, items));
 }
 
-void DialogManager::_callback(int playerid, int dialogid, int response, int listitem, const char* inputtext)
+bool DialogManager::_callback(int playerid, int dialogid, int response, int listitem, const char* inputtext)
 {
 	auto iter = pending.find(dialogid);
 	if (iter == pending.end())
 	{
 		std::cout << "[DialogManager] Warning: Nonexistent dialog id.\n";
-		return;
+		return false;
 	}
 	if (accountmgr.findAccount(playerid)->getSessionID() != iter->second.playersession)
 	{
 		std::cout << "[DialogManager] Warning: Player session id dismatches. Callback ignored.\n";
 		_dispose(dialogid);
-		return;
+		return false;
 	}
 
 	switch (iter->second.dialogtype)
@@ -157,7 +157,7 @@ void DialogManager::_callback(int playerid, int dialogid, int response, int list
 	}
 
 	_dispose(dialogid);
-	return;
+	return true;
 }
 
 int DialogManager::_allocateID(int trytime)

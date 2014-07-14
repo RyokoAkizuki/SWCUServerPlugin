@@ -67,7 +67,7 @@ public:
 		const std::string& caption, const DialogItemList& items,
 		const std::string& btn1, const std::string& btn2);
 
-	void _callback(int playerid, int dialogid, int response, int listitem, const char* inputtext);
+	bool _callback(int playerid, int dialogid, int response, int listitem, const char* inputtext);
 
 protected:
 	int _allocateID(int trytime = 0);

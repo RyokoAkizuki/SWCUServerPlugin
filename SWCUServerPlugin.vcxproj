@@ -161,7 +161,6 @@
     <ClCompile Include="SAMPFunctionUtility.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="DialogManager.cpp" />
-    <ClCompile Include="Shop.cpp" />
     <ClCompile Include="Teleport.cpp" />
     <ClCompile Include="WeaponShop.cpp" />
   </ItemGroup>
@@ -185,7 +184,6 @@
     <ClInclude Include="MapFunctions.h" />
     <ClInclude Include="SAMPFunctionUtility.h" />
     <ClInclude Include="sha1.h" />
-    <ClInclude Include="Shop.h" />
     <ClInclude Include="Teleport.h" />
     <ClInclude Include="StringUtility.h" />
     <ClInclude Include="WeaponShop.h" />

@@ -3,7 +3,7 @@
 #include "GeneralPanel.h"
 
 #include "AccountDialogs.h"
-#include "Shop.h"
+#include "WeaponShop.h"
 #include "GameServer.h"
 #include "StringUtility.h"
 #include "AdminCommands.h"
@@ -15,7 +15,7 @@ void showGeneralPanel(const std::shared_ptr<Account>& player)
 	DialogItemList list;
 	list
 		.append("我的账号", std::bind(&showAccountOptionsDialog, player))
-		.append("商店", std::bind(&showShopDialog, player))
+		.append("武器", std::bind(&showWeaponShopDialog, player))
 		.append("管理命令", std::bind(&showServerAdminDialog, player))
 		.append("给服务器提建议", [player]() {
 			GameServer::getInstance().dialogmanager.displayInputDialog(

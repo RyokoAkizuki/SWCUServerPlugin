@@ -5,14 +5,18 @@
 
 AMX_NATIVE g_streamer_create_object;
 AMX_NATIVE g_streamer_destroy_object;
+AMX_NATIVE g_streamer_updateex;
 
 void _initStreamerFunctions()
 {
 	static bool inited = false;
 	if (inited) return;
+
 	g_streamer_create_object = sampgdk_FindNative("CreateDynamicObject");
 	g_streamer_destroy_object = sampgdk_FindNative("DestroyDynamicObject");
-	if (!g_streamer_create_object || !g_streamer_destroy_object)
+	g_streamer_updateex = sampgdk_FindNative("Streamer_UpdateEx");
+
+	if (!g_streamer_create_object) // check the first one is enough.
 	{
 		std::cout << "Warning: Streamer plugin may not be loaded.\n";
 	}
@@ -44,4 +48,10 @@ int createVehicle(const VehicleInfo& veh)
 int destroyVehicle(int id)
 {
 	return DestroyVehicle(id);
+}
+
+int updatePlayerObject(int playerid, float x, float y, float z)
+{
+	_initStreamerFunctions();
+	return sampgdk_InvokeNative(g_streamer_updateex, "ifff", playerid, x, y, z);
 }

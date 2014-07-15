@@ -117,5 +117,9 @@ void showWeaponShopDialog(const std::shared_ptr<Account>& player)
 		list.append(category, std::bind(&showWeaponShopCategoryDialog, player, category));
 	}
 
+	list.append("护甲", [player]() {
+		SetPlayerArmour(player->getInGameID(), 100.0f);
+	});
+
 	GameServer::getInstance().dialogmanager.displayListDialog(player, "购买武器", list, "确定", "取消");
 }

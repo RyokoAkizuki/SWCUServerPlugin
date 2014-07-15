@@ -4,12 +4,14 @@
 #include <ctime>
 
 #include "Teleport.h"
+#include "MapFunctions.h"
 
 void doTeleportToPosForOnePlayerOnFoot(int playerid, float x, float y, float z, int interior, int virtualworld)
 {
 	SetPlayerPos(playerid, x, y, z);
 	SetPlayerInterior(playerid, interior);
 	SetPlayerVirtualWorld(playerid, virtualworld);
+	updatePlayerObject(playerid, x, y, z);
 }
 
 void teleportToPos(int playerid, float x, float y, float z, int interior, int virtualworld)

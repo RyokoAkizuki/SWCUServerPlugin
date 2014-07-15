@@ -50,7 +50,7 @@ ADMIN_CMD_BEGIN_AT(PM, "密语", 0, g_admin_player_cmd_reg)
 {
 	GameServer::getInstance().dialogmanager.displayInputDialog(admin, "发送密语", "请输入消息", "发送", "取消", false,
 	[admin, target](const std::string& msg) {
-		SendClientMessage(admin->getInGameID(), 0xFFFFFFFF, STR("[Message] 消息发送给 " << admin->getLogName() << UID(admin) << ": " << msg).c_str());
+		SendClientMessage(admin->getInGameID(), 0xFFFFFFFF, STR("[Message] 消息发送给 " << target->getLogName() << UID(target) << ": " << msg).c_str());
 		SendClientMessage(target->getInGameID(), 0xFFFFFFFF, STR("[Message] 来自 " << admin->getLogName() << UID(admin) << " 的消息: " << msg).c_str());
 		ADMIN_LOG(admin, target, msg);
 	});

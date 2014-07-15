@@ -72,9 +72,6 @@
     <ClCompile Include="GeneralPanel.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Shop.cpp">
-      <Filter>Shop</Filter>
-    </ClCompile>
     <ClCompile Include="SAMPFunctionUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,9 +124,6 @@
     </ClInclude>
     <ClInclude Include="GeneralPanel.h">
       <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Shop.h">
-      <Filter>Shop</Filter>
     </ClInclude>
     <ClInclude Include="SAMPFunctionUtility.h" />
   </ItemGroup>

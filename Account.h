@@ -14,6 +14,7 @@ protected:
 
 public:
 	Account(const AccountInfo& ainfo, DataSource& db);
+	virtual ~Account();
 
 	std::string getLogName() const;
 	std::string getNickname() const;

@@ -1,4 +1,3 @@
-#include <sstream>
 #include <string>
 #include <map>
 #include <vector>
@@ -6,6 +5,7 @@
 
 #include "WeaponShop.h"
 #include "GameServer.h"
+#include "StringUtility.h"
 
 std::map<std::string, std::vector<WeaponShopItem>> g_weaponlist = 
 {
@@ -96,9 +96,8 @@ void showWeaponShopCategoryDialog(const std::shared_ptr<Account>& player, const 
 
 	for (auto item : iter->second)
 	{
-		std::stringstream stream;
-		stream << item.cnname << " 价格: " << item.price << " 弹药: " << item.ammo;
-		list.append(stream.str(), [player, item]() {
+		list.append(STR(item.cnname << " 价格: " << item.price << " 弹药: " << item.ammo),
+		[player, item]() {
 			player->increaseMoney(-1 * item.price, "buy weapon");
 			GivePlayerWeapon(player->getInGameID(), item.id, item.ammo);
 		}, std::bind(&showWeaponShopDialog, player));

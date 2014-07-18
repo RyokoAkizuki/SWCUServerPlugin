@@ -22,6 +22,11 @@ struct AccountInfo
 	bool freezed;
 	bool muted;
 
+	int64_t logtime;
+
+	// last frame data
+	float x, y, z;
+
 	AccountInfo() :
 		money(0), adminlevel(0), disabled(false), loggedin(false), registered(false), ingameid(-1), session(0),
 		freezed(false), muted(false)

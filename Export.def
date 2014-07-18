@@ -6,8 +6,11 @@ EXPORTS
 	OnGameModeInit
 	OnPlayerConnect
 	OnPlayerDisconnect
+	OnPlayerSpawn
 	OnPlayerCommandText
 	OnDialogResponse
 	OnPlayerClickPlayer
 	OnPlayerText
 	OnPlayerUpdate
+	OnPlayerEnterDynamicArea
+	OnPlayerLeaveDynamicArea

@@ -1,4 +1,5 @@
 #include <sampgdk/a_players.h>
+#include <ctime>
 
 #include "StringUtility.h"
 #include "Account.h"
@@ -6,6 +7,12 @@
 Account::Account(const AccountInfo& ainfo, DataSource& db) : info(ainfo), datasrc(db)
 {
 	datasrc.loadAccount(info);
+	info.logtime = time(NULL);
+}
+
+Account::~Account()
+{
+	datasrc.increaseAccountPlayingTime(info, time(NULL) - info.logtime);
 }
 
 std::string Account::getLogName() const

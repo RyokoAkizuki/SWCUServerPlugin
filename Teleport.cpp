@@ -48,3 +48,17 @@ void teleportToPlayer(int playerid, int targetplayerid)
 	int vw = GetPlayerVirtualWorld(targetplayerid);
 	teleportToPos(playerid, pos[0], pos[1], pos[2], it, vw);
 }
+/*
+void withdrawPlayer(const std::shared_ptr<Account>& player)
+{
+	float pos[3];
+	GetPlayerPos(player->getInGameID(), &pos[0], &pos[1], &pos[2]);
+	float d[3];
+	d[0] = pos[0] - player->_getAccountInfo().x;
+	d[1] = pos[1] - player->_getAccountInfo().y;
+	d[2] = pos[2] - player->_getAccountInfo().z;
+	float k = sqrt((20 * 20) / (d[0] * d[0] + d[1] * d[1] + d[2] * d[2]));
+	teleportToPos(player->getInGameID(), pos[0] - (k * d[0]), pos[1] - (k * d[1]), pos[2],
+		GetPlayerInterior(player->getInGameID()), GetPlayerVirtualWorld(player->getInGameID()));
+}
+*/

@@ -13,6 +13,8 @@ std::string g_dbname_account_ban = "swcuserver.account.ban";
 std::string g_dbname_bank_transfer = "swcuserver.bank.transfer";
 std::string g_dbname_account_admin_log = "swcuserver.account.admin.log";
 std::string g_dbname_suggestion = "swcuserver.suggestion";
+std::string g_dbname_house = "swcuserver.house";
+std::string g_dbname_house_trade = "swcuserver.house.trade";
 
 DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnection(true))
 {
@@ -54,6 +56,11 @@ DataSource::DataSource(const std::string& host) : conn(new mongo::DBClientConnec
 
 		// Server
 		conn->createCollection(g_dbname_suggestion);
+
+		// House
+		conn->createCollection(g_dbname_house);
+		conn->ensureIndex(g_dbname_house, BSON("ownerid" << 1), false);
+		conn->createCollection(g_dbname_house_trade);
 
 		std::cout << "[DataSource] Data collections are ready.\n";
 	}
@@ -306,7 +313,8 @@ bool DataSource::createAccount(AccountInfo& src)
 			"nickname" << GBKToUTF8(src.nickname) <<
 			"money" << src.money <<
 			"adminlevel" << src.adminlevel <<
-			"disabled" << src.disabled
+			"disabled" << src.disabled <<
+			"playingtime" << 0
 			));
 
 		auto err = conn->getLastError();
@@ -477,6 +485,24 @@ bool DataSource::changeAccountAdminLevel(AccountInfo& account, const AccountInfo
 	return true;
 }
 
+bool DataSource::increaseAccountPlayingTime(AccountInfo& account, int64_t time)
+{
+	try
+	{
+		auto id = mongo::OID(account.userid);
+		conn->update(g_dbname_account,
+			QUERY("_id" << id),
+			BSON("$inc" << BSON("playingtime" << time))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] increaseAccountPlayingTime failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
 bool DataSource::adminOperationLog(const std::string& operid, const std::string& effectedid, const std::string& operation, const std::string& msg)
 {
 	try
@@ -557,5 +583,203 @@ bool DataSource::makeSuggestion(AccountInfo& account, const std::string& content
 		std::cout << "[DataSource] makeSuggestion failed. Caught " << e.what() << "\n";
 		return false;
 	}
+	return true;
+}
+
+bool DataSource::createHouse(HouseInfo& house)
+{
+	try
+	{
+		mongo::OID houseid(mongo::OID::gen());
+
+		conn->insert(g_dbname_house, BSON(
+			"_id" << houseid <<
+			"ownerid" << mongo::OID(house.ownerid) <<
+			"name" << GBKToUTF8(house.name) <<
+			"password" << GBKToUTF8(house.password) <<
+			"time" << mongo::DATENOW <<
+			"bindedmapname" << GBKToUTF8(house.bindedmapname) <<
+			"ex" << house.ex << "ey" << house.ey << "ez" << house.ez << "rotation" << house.rotation <<
+			"tx" << house.tx << "ty" << house.ty << "tz" << house.tz <<
+			"lx" << house.lx << "ly" << house.ly << "lz" << house.lz <<
+			"mx" << house.mx << "my" << house.my << "mz" << house.mz <<
+			"interior" << house.interior <<
+			"price" << house.price << "onsale" << house.onsale << "rent" << house.rent << "expiredtime" << house.expiredtime
+			));
+
+		auto err = conn->getLastError();
+
+		if (err.size())
+		{
+			std::cout << "[DataSource] createHouse failed: " << err << "\n";
+			return false;
+		}
+
+		house.houseid = houseid.str();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] createHouse failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+void DataSource::loadHouses(std::vector<HouseInfo>& dest, const std::string& playerid)
+{
+	try
+	{
+		auto cur = (playerid.empty()) ?
+			conn->query(g_dbname_house) :
+			conn->query(g_dbname_house, QUERY("ownerid" << mongo::OID(playerid)));
+
+		HouseInfo info;
+
+		while (cur->more())
+		{
+			auto obj = cur->next();
+			info.houseid = obj["_id"].OID().str();
+			info.ownerid = obj["ownerid"].OID().str();
+			info.name = UTF8ToGBK(obj["name"].str());
+			info.password = UTF8ToGBK(obj["password"].str());
+			info.bindedmapname = UTF8ToGBK(obj["bindedmapname"].str());
+			info.ex = obj["ex"].numberDouble(); info.ey = obj["ey"].numberDouble(); info.ez = obj["ez"].numberDouble();
+			info.tx = obj["tx"].numberDouble(); info.ty = obj["ty"].numberDouble(); info.tz = obj["tz"].numberDouble();
+			info.lx = obj["lx"].numberDouble(); info.ly = obj["ly"].numberDouble(); info.lz = obj["lz"].numberDouble();
+			info.mx = obj["mx"].numberDouble(); info.my = obj["my"].numberDouble(); info.mz = obj["mz"].numberDouble();
+			info.rotation = obj["rotation"].numberDouble();
+			info.interior = obj["interior"].numberInt();
+			info.price = obj["price"].numberInt();
+			info.onsale = obj["onsale"].boolean();
+			info.rent = obj["rent"].boolean();
+			info.expiredtime = obj["expiredtime"].numberLong();
+
+			dest.push_back(info);
+		}
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] loadHouses failed. Caught " << e.what() << "\n";
+	}
+}
+
+bool DataSource::loadHouse(const std::string& houseid, HouseInfo& info)
+{
+	try
+	{
+		auto obj = conn->findOne(g_dbname_house, QUERY("_id" << mongo::OID(houseid)));
+		if (obj.isEmpty())
+		{
+			std::cout << "[DataSource] loadHouse failed: id not found.\n";
+			return false;
+		}
+		info.houseid = obj["_id"].OID().str();
+		info.ownerid = obj["ownerid"].OID().str();
+		info.name = UTF8ToGBK(obj["name"].str());
+		info.password = UTF8ToGBK(obj["password"].str());
+		info.bindedmapname = UTF8ToGBK(obj["bindedmapname"].str());
+		info.ex = obj["ex"].numberDouble(); info.ey = obj["ey"].numberDouble(); info.ez = obj["ez"].numberDouble();
+		info.tx = obj["tx"].numberDouble(); info.ty = obj["ty"].numberDouble(); info.tz = obj["tz"].numberDouble();
+		info.lx = obj["lx"].numberDouble(); info.ly = obj["ly"].numberDouble(); info.lz = obj["lz"].numberDouble();
+		info.mx = obj["mx"].numberDouble(); info.my = obj["my"].numberDouble(); info.mz = obj["mz"].numberDouble();
+		info.rotation = obj["rotation"].numberDouble();
+		info.interior = obj["interior"].numberInt();
+		info.price = obj["price"].numberInt();
+		info.onsale = obj["onsale"].boolean();
+		info.rent = obj["rent"].boolean();
+		info.expiredtime = obj["expiredtime"].numberLong();
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] loadHouse failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
+bool DataSource::setHouseExpiredTime(HouseInfo& house, int64_t time)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("expiredtime" << time)));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setHouseExpiredTime failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.expiredtime = time;
+	return true;
+}
+
+bool DataSource::setHouseOwner(HouseInfo& house, const std::string& ownerid)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("ownerid" << mongo::OID(ownerid))));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setHouseOwner failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.ownerid = ownerid;
+	return true;
+}
+
+bool DataSource::setHouseEntrance(HouseInfo& house, float x, float y, float z, float rotation)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("ex" << x << "ey" << y << "ez" << "z" << "rotation" << rotation)));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setHouseEntrance failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.ex = x; house.ey = y; house.ez = z; house.rotation = rotation;
+	return true;
+}
+
+bool DataSource::setHouseName(HouseInfo& house, const std::string& name)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("name" << GBKToUTF8(name)))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] changeAccountNickName failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.name = name;
+	return true;
+}
+
+bool DataSource::setHousePassword(HouseInfo& house, const std::string& password)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("password" << GBKToUTF8(password)))
+			);
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setHousePassword failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.password = password;
 	return true;
 }

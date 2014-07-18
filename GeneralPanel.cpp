@@ -7,6 +7,7 @@
 #include "GameServer.h"
 #include "StringUtility.h"
 #include "AdminCommands.h"
+#include "HouseDialogs.h"
 
 using namespace std::placeholders;
 
@@ -15,6 +16,7 @@ void showGeneralPanel(const std::shared_ptr<Account>& player)
 	DialogItemList list;
 	list
 		.append("我的账号", std::bind(&showAccountOptionsDialog, player))
+		.append("我的房屋", std::bind(&showHouseListDialog, player))
 		.append("武器", std::bind(&showWeaponShopDialog, player))
 		.append("管理命令", std::bind(&showServerAdminDialog, player))
 		.append("给服务器提建议", [player]() {

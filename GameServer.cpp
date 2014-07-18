@@ -9,5 +9,5 @@ GameServer& GameServer::getInstance()
 GameServer::GameServer(const std::string& dbhost)
 : datasource(dbhost), accountmanager(datasource), mapmanager(datasource), dialogmanager(accountmanager)
 {
-
+	housemanager.reloadAll();
 }

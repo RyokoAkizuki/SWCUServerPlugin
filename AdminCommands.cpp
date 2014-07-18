@@ -182,6 +182,25 @@ ADMIN_CMD_BEGIN_AR(LockServer, "锁定服务器", 3, g_admin_server_cmd_reg)
 }
 ADMIN_CMD_END(LockServer)
 
+ADMIN_CMD_BEGIN_AR(CreateEmptyHouse, "创建空白房屋", 3, g_admin_server_cmd_reg)
+{
+	HouseInfo info; info.name = reason;
+	GetPlayerPos(admin->getInGameID(), &info.ex, &info.ey, &info.ez);
+	info.ez -= 1.0f;
+	GetPlayerFacingAngle(admin->getInGameID(), &info.rotation);
+	info.rotation += 90.0f;
+	GameServer::getInstance().housemanager.addHouse(info);
+	ADMIN_LOG(admin, GameServer::getInstance().accountmanager.findAccount(-1), "");
+}
+ADMIN_CMD_END(CreateEmptyHouse)
+
+ADMIN_CMD_BEGIN_A(ReloadHouses, "重新加载所有房屋", 3, g_admin_server_cmd_reg)
+{
+	GameServer::getInstance().housemanager.reloadAll();
+	ADMIN_LOG(admin, GameServer::getInstance().accountmanager.findAccount(-1), "");
+}
+ADMIN_CMD_END(ReloadHouses)
+
 void showAdminDialog(const std::shared_ptr<Account>& admin, const std::shared_ptr<Account>& target, std::vector<AdminCommandBase*>& cmdlist)
 {
 	DialogItemList list;

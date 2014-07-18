@@ -10,6 +10,7 @@
 #include <sampgdk/a_vehicles.h>
 #include <sampgdk/core.h>
 #include <sampgdk/sdk.h>
+#include <sampgdk/streamer.h>
 
 #include "GameServer.h"
 #include "AccountDialogs.h"
@@ -67,9 +68,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason)
 	return true;
 }
 
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid)
+{
+	GameServer::getInstance().housemanager.initAll();
+	return true;
+}
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext)
 {
-	// std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+	std::shared_ptr<Account> acc = GameServer::getInstance().accountmanager.findAccount(playerid);
 
 	return false;
 }
@@ -119,10 +126,28 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char * text)
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
 {
-	if (GameServer::getInstance().accountmanager.findAccount(playerid)->isFreezed())
+	auto acc = GameServer::getInstance().accountmanager.findAccount(playerid);
+	if (acc->isFreezed())
 	{
 		return false;
 	}
+	// record this frame data
+	auto& info = acc->_getAccountInfo();
+	GetPlayerPos(playerid, &info.x, &info.y, &info.z);
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterDynamicArea(int playerid, int areaid)
+{
+	GameServer::getInstance().areamanager._callbackEnter(GameServer::getInstance().accountmanager.findAccount(playerid), areaid);
+	SendClientMessage(playerid, 0xFFFFFFFF, "Entered");
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveDynamicArea(int playerid, int areaid)
+{
+	GameServer::getInstance().areamanager._callbackExit(GameServer::getInstance().accountmanager.findAccount(playerid), areaid);
+	SendClientMessage(playerid, 0xFFFFFFFF, "Exited");
 	return true;
 }
 

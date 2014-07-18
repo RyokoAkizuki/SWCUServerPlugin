@@ -22,6 +22,9 @@
     <Filter Include="Teleport">
       <UniqueIdentifier>{47874d59-1674-4892-800d-4b222e1a1046}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Housing">
+      <UniqueIdentifier>{3005ae66-8b05-454b-87bf-fad8c68e38ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MapFunctions.cpp">
@@ -73,6 +76,18 @@
       <Filter>UI</Filter>
     </ClCompile>
     <ClCompile Include="SAMPFunctionUtility.cpp" />
+    <ClCompile Include="AreaManager.cpp">
+      <Filter>Map</Filter>
+    </ClCompile>
+    <ClCompile Include="House.cpp">
+      <Filter>Housing</Filter>
+    </ClCompile>
+    <ClCompile Include="HouseManager.cpp">
+      <Filter>Housing</Filter>
+    </ClCompile>
+    <ClCompile Include="HouseDialogs.cpp">
+      <Filter>Housing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapManager.h">
@@ -126,6 +141,24 @@
       <Filter>UI</Filter>
     </ClInclude>
     <ClInclude Include="SAMPFunctionUtility.h" />
+    <ClInclude Include="AreaManager.h">
+      <Filter>Map</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseInfo.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
+    <ClInclude Include="House.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseManager.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseBuilder.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseDialogs.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Export.def" />

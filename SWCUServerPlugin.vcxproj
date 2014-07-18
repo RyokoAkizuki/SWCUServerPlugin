@@ -36,7 +36,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -67,7 +67,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\$(Configuration);E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dbg_on\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
+    <LibraryPath>E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\Debug;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dbg_on\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
@@ -75,7 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
-    <LibraryPath>E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\$(Configuration);E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
+    <LibraryPath>E:\SWCU\resources\sampgdk4-b2-with-streamer\sampgdk-4.0-beta2\RelWithDebInfo;E:\SWCU\server\SWCUServerPlugin\$(Configuration);C:\local\boost_1_55_0\lib32-msvc-12.0;E:\SWCU\resources\mongo-cxx-driver-legacy-0.0-26compat-2.6.2\build\win32\32\dynamic-windows\use-system-boost;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\local\boost_1_55_0;E:\SWCU\resources\sampgdk-4.0.0-beta-win32\include;E:\SWCU\server\SDK;E:\SWCU\resources\xmlrpc++0.7\src;$(IncludePath)</IncludePath>
@@ -124,6 +124,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>sampgdk4.lib;xmlrpc.lib;ws2_32.lib;mongoclient.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>Export.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,11 +148,15 @@
     <ClCompile Include="Account.cpp" />
     <ClCompile Include="AccountManager.cpp" />
     <ClCompile Include="AdminCommands.cpp" />
+    <ClCompile Include="AreaManager.cpp" />
     <ClCompile Include="DataSource.cpp" />
     <ClCompile Include="AccountDialogs.cpp" />
     <ClCompile Include="EncodingUtility.cpp" />
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="GeneralPanel.cpp" />
+    <ClCompile Include="House.cpp" />
+    <ClCompile Include="HouseDialogs.cpp" />
+    <ClCompile Include="HouseManager.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
     <ClCompile Include="MapFunctions.cpp" />
     <ClCompile Include="MapInfo.cpp" />
@@ -173,11 +178,17 @@
     <ClInclude Include="AccountDialogs.h" />
     <ClInclude Include="AccountInfo.h" />
     <ClInclude Include="AccountManager.h" />
+    <ClInclude Include="AreaManager.h" />
     <ClInclude Include="DataSource.h" />
     <ClInclude Include="DialogManager.h" />
     <ClInclude Include="EncodingUtility.h" />
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="GeneralPanel.h" />
+    <ClInclude Include="House.h" />
+    <ClInclude Include="HouseBuilder.h" />
+    <ClInclude Include="HouseDialogs.h" />
+    <ClInclude Include="HouseInfo.h" />
+    <ClInclude Include="HouseManager.h" />
     <ClInclude Include="MapCodeParser.h" />
     <ClInclude Include="MapInfo.h" />
     <ClInclude Include="MapManager.h" />

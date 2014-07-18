@@ -12,7 +12,7 @@ Account::Account(const AccountInfo& ainfo, DataSource& db) : info(ainfo), datasr
 
 Account::~Account()
 {
-	datasrc.increaseAccountPlayingTime(info, time(NULL) - info.logtime);
+	if(info.loggedin) datasrc.increaseAccountPlayingTime(info, time(NULL) - info.logtime);
 }
 
 std::string Account::getLogName() const

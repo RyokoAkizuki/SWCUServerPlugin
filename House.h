@@ -17,6 +17,7 @@ public:
 
 	void init();
 	bool setEntrance(float x, float y, float z, float rotation);
+	bool setTeleportPos(float x, float y, float z);
 	bool setName(const std::string& name);
 	bool setPassword(const std::string& password);
 	std::string getName();

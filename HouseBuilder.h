@@ -5,17 +5,18 @@
 class HouseBuilder
 {
 protected:
-	bool entrance, name, areamin, areamax;
 	HouseInfo info;
+	bool updating;
 
 public:
-	HouseBuilder(float x, float y, float z);
+	HouseBuilder();
 
-	void setEntrance(float x, float y, float z, float rotation);
 	void setName(const std::string& name);
-	void setAreaMin(float x, float y, float z);
-	void setAreaMax(float x, float y, float z);
-
-	bool finished();
-	bool save();
+	void setEntrance(float x, float y, float z, float rotation);
+	void setOwner(const std::string& playerid);
+	void startUpdateArea();
+	void stopUpdateArea();
+	bool isUpdatingArea();
+	void updateArea(float x, float y, float z);
+	void save();
 };

@@ -25,7 +25,7 @@ House::House(HouseInfo& info) : info(info)
 	});
 	zoneid = GangZoneCreate(info.lx, info.ly, info.mx, info.my);
 	signid = CreateDynamicObject(3337, info.ex, info.ey, info.ez, 0.0f, 0.0f, info.rotation, -1, -1, -1, 200.0f, 200.0f);
-	SetDynamicObjectMaterialText(signid, 1, info.name.c_str(), OBJECT_MATERIAL_SIZE_256x128, "Arial", 64, 1, 0xFFFFFFFF, 0xFF003366, 1);
+	SetDynamicObjectMaterialText(signid, 1, info.name.c_str(), OBJECT_MATERIAL_SIZE_256x128, "Arial", 32, 1, 0xFFFFFFFF, 0xFF003366, 1);
 	init();
 }
 
@@ -43,7 +43,18 @@ void House::init()
 
 bool House::setEntrance(float x, float y, float z, float rotation)
 {
-	return GameServer::getInstance().datasource.setHouseEntrance(info, x, y, z, rotation);
+	bool ret = GameServer::getInstance().datasource.setHouseEntrance(info, x, y, z, rotation);
+	if (ret)
+	{
+		SetDynamicObjectPos(signid, x, y, z);
+		SetDynamicObjectRot(signid, 0.0, 0.0, rotation);
+	}
+	return ret;
+}
+
+bool House::setTeleportPos(float x, float y, float z)
+{
+	return GameServer::getInstance().datasource.setHouseTeleportPos(info, x, y, z);
 }
 
 bool House::setName(const std::string& name)
@@ -51,7 +62,7 @@ bool House::setName(const std::string& name)
 	bool ret = GameServer::getInstance().datasource.setHouseName(info, name);
 	if (ret)
 	{
-		SetDynamicObjectMaterialText(signid, 1, info.name.c_str(), OBJECT_MATERIAL_SIZE_256x128, "Arial", 64, 1, 0xFFFFFFFF, 0xFF003366, 1);
+		SetDynamicObjectMaterialText(signid, 1, info.name.c_str(), OBJECT_MATERIAL_SIZE_256x128, "Arial", 32, 1, 0xFFFFFFFF, 0xFF003366, 1);
 	}
 	return ret;
 }

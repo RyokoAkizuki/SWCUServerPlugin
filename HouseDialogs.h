@@ -7,5 +7,6 @@ void showHouseAuthDialog(const std::shared_ptr<Account>& player, const std::shar
 void showHouseListDialog(const std::shared_ptr<Account>& player);
 void showHouseManageDialog(const std::shared_ptr<Account>& player, const std::shared_ptr<House>& house);
 void showHouseChangeNameDialog(const std::shared_ptr<Account>& player, const std::shared_ptr<House>& house);
+void showHouseChangePasswordDialog(const std::shared_ptr<Account>& player, const std::shared_ptr<House>& house);
 
 // void showHouseGuestDialog(const std::shared_ptr<Account>& player, const std::shared_ptr<House>& house);

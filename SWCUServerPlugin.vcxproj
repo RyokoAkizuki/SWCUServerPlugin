@@ -155,6 +155,8 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="GeneralPanel.cpp" />
     <ClCompile Include="House.cpp" />
+    <ClCompile Include="HouseBuildDialog.cpp" />
+    <ClCompile Include="HouseBuilder.cpp" />
     <ClCompile Include="HouseDialogs.cpp" />
     <ClCompile Include="HouseManager.cpp" />
     <ClCompile Include="MapCodeParser.cpp" />
@@ -185,6 +187,7 @@
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="GeneralPanel.h" />
     <ClInclude Include="House.h" />
+    <ClInclude Include="HouseBuildDialog.h" />
     <ClInclude Include="HouseBuilder.h" />
     <ClInclude Include="HouseDialogs.h" />
     <ClInclude Include="HouseInfo.h" />

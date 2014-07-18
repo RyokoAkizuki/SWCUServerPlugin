@@ -3,6 +3,7 @@
 #include "DataSource.h"
 #include "Account.h"
 #include "EncodingUtility.h"
+#include "StringUtility.h"
 
 std::string g_dbname_map = "swcuserver.map.brief";
 std::string g_dbname_map_obj = "swcuserver.map.detail.object";
@@ -503,6 +504,27 @@ bool DataSource::increaseAccountPlayingTime(AccountInfo& account, int64_t time)
 	return true;
 }
 
+bool DataSource::searchAccounts(const std::string& partofname, std::vector<std::pair<std::string, std::string>>& namedest)
+{
+	try
+	{
+		auto cur = conn->query(g_dbname_account, QUERY("logname" << BSON(
+			"$regex" << STR(".*" << GBKToUTF8(partofname) << ".*") << "$options" << "i")));
+
+		while (cur->more())
+		{
+			auto obj = cur->next();
+			namedest.push_back(std::make_pair(obj["_id"].OID().str(), UTF8ToGBK(obj["logname"].str())));
+		}
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] searchAccounts failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	return true;
+}
+
 bool DataSource::adminOperationLog(const std::string& operid, const std::string& effectedid, const std::string& operation, const std::string& msg)
 {
 	try
@@ -737,7 +759,7 @@ bool DataSource::setHouseEntrance(HouseInfo& house, float x, float y, float z, f
 	{
 		conn->update(g_dbname_house,
 			QUERY("_id" << mongo::OID(house.houseid)),
-			BSON("$set" << BSON("ex" << x << "ey" << y << "ez" << "z" << "rotation" << rotation)));
+			BSON("$set" << BSON("ex" << x << "ey" << y << "ez" << z << "rotation" << rotation)));
 	}
 	catch (const mongo::DBException &e)
 	{
@@ -745,6 +767,23 @@ bool DataSource::setHouseEntrance(HouseInfo& house, float x, float y, float z, f
 		return false;
 	}
 	house.ex = x; house.ey = y; house.ez = z; house.rotation = rotation;
+	return true;
+}
+
+bool DataSource::setHouseTeleportPos(HouseInfo& house, float x, float y, float z)
+{
+	try
+	{
+		conn->update(g_dbname_house,
+			QUERY("_id" << mongo::OID(house.houseid)),
+			BSON("$set" << BSON("tx" << x << "ty" << y << "tz" << z)));
+	}
+	catch (const mongo::DBException &e)
+	{
+		std::cout << "[DataSource] setHouseTeleportPos failed. Caught " << e.what() << "\n";
+		return false;
+	}
+	house.tx = x; house.ty = y; house.tz = z;
 	return true;
 }
 

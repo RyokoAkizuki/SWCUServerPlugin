@@ -134,6 +134,34 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
 	// record this frame data
 	auto& info = acc->_getAccountInfo();
 	GetPlayerPos(playerid, &info.x, &info.y, &info.z);
+
+	auto& hb = acc->_getAccountInfo().housebuilder;
+	if (hb.get())
+	{
+		int keys, ud, lr;
+		GetPlayerKeys(playerid, &keys, &ud, &lr);
+		if (keys & KEY_FIRE)
+		{
+			SendClientMessage(playerid, 0xFFFFFFFF, "[HouseBuilder] 开始记录房屋区域");
+			hb->startUpdateArea();
+		}
+		if (keys & KEY_HANDBRAKE)
+		{
+			SendClientMessage(playerid, 0xFFFFFFFF, "[HouseBuilder] 停止记录房屋区域");
+			hb->stopUpdateArea();
+		}
+		if (hb->isUpdatingArea())
+		{
+			hb->updateArea(info.x, info.y, info.z);
+		}
+		if (keys & KEY_LOOK_BEHIND)
+		{
+			SendClientMessage(playerid, 0xFFFFFFFF, "[HouseBuilder] 房屋已保存");
+			hb->stopUpdateArea();
+			hb->save();
+			hb.reset();
+		}
+	}
 	return true;
 }
 

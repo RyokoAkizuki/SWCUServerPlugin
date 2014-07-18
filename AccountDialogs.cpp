@@ -3,6 +3,7 @@
 
 #include "AccountDialogs.h"
 #include "GameServer.h"
+#include "StringUtility.h"
 
 void showLoginDialog(const std::shared_ptr<Account>& player)
 {
@@ -75,4 +76,21 @@ void showAccountOptionsDialog(const std::shared_ptr<Account>& player)
 
 	GameServer::getInstance().dialogmanager.displayListDialog(
 		player, "我的账号", list, "确定", "取消");
+}
+
+void showSearchPlayerDialog(const std::shared_ptr<Account>& player, const std::function<void(const std::string&)>& cb)
+{
+	GameServer::getInstance().dialogmanager.displayInputDialog(player, "查找玩家", "输入玩家全名或部分名",
+		"查找", "取消", false,
+	[player, cb](const std::string& name) { 
+		std::vector<std::pair<std::string, std::string>> dest;
+		GameServer::getInstance().datasource.searchAccounts(name, dest);
+		DialogItemList list;
+		for (auto& i : dest)
+		{
+			list.append(STR(i.first << " " << i.second), std::bind(cb, i.first));
+		}
+		GameServer::getInstance().dialogmanager.displayListDialog(player, STR("查找玩家 " << name), list, "查看", "取消");
+	}
+	);
 }

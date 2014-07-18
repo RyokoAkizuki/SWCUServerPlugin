@@ -2,6 +2,9 @@
 
 #include <string>
 #include <cstdint>
+#include <memory>
+
+#include "HouseBuilder.h"
 
 struct AccountInfo
 {
@@ -23,6 +26,8 @@ struct AccountInfo
 	bool muted;
 
 	int64_t logtime;
+
+	std::shared_ptr<HouseBuilder> housebuilder;
 
 	// last frame data
 	float x, y, z;

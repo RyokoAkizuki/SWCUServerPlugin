@@ -46,6 +46,8 @@ public:
 	// Notice: this will update adminlevel value in accountinfo.
 	bool changeAccountAdminLevel(AccountInfo& account, const AccountInfo& oper, int level);
 	bool increaseAccountPlayingTime(AccountInfo& account, int64_t time);
+	// <id, logname>
+	bool searchAccounts(const std::string& partofname, std::vector<std::pair<std::string, std::string>>& namedest);
 
 	bool adminOperationLog(const std::string& operid, const std::string& effectedid, const std::string& operation, const std::string& msg);
 
@@ -61,6 +63,7 @@ public:
 	bool setHouseExpiredTime(HouseInfo& house, int64_t time);
 	bool setHouseOwner(HouseInfo& house, const std::string& ownerid);
 	bool setHouseEntrance(HouseInfo& house, float x, float y, float z, float rotation);
+	bool setHouseTeleportPos(HouseInfo& house, float x, float y, float z);
 	bool setHouseName(HouseInfo& house, const std::string& name);
 	bool setHousePassword(HouseInfo& house, const std::string& password);
 };

@@ -88,6 +88,12 @@
     <ClCompile Include="HouseDialogs.cpp">
       <Filter>Housing</Filter>
     </ClCompile>
+    <ClCompile Include="HouseBuildDialog.cpp">
+      <Filter>Housing</Filter>
+    </ClCompile>
+    <ClCompile Include="HouseBuilder.cpp">
+      <Filter>Housing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MapManager.h">
@@ -157,6 +163,9 @@
       <Filter>Housing</Filter>
     </ClInclude>
     <ClInclude Include="HouseDialogs.h">
+      <Filter>Housing</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseBuildDialog.h">
       <Filter>Housing</Filter>
     </ClInclude>
   </ItemGroup>

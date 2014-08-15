@@ -47,8 +47,9 @@ House::House(HouseInfo& info) : info(info)
 
 House::~House()
 {
-	GameServer::getInstance().areamanager.destroyArea(areaid);
+	GameServer::getInstance().areamanager.unregisterArea(areaid);
 	GangZoneDestroy(zoneid);
+	DestroyDynamicArea(areaid);
 	DestroyDynamicObject(signid);
 }
 

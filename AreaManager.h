@@ -32,7 +32,7 @@ protected:
 
 public:
 	void registerArea(int id, const AreaCallback& cbenter, const AreaCallback& cbexit = [](const std::shared_ptr<Account>&){});
-	void destroyArea(int id);
+	void unregisterArea(int id);
 
 	void _callbackEnter(const std::shared_ptr<Account>& player, int areaid);
 	void _callbackExit(const std::shared_ptr<Account>& player, int areaid);

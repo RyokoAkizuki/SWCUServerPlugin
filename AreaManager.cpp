@@ -23,7 +23,7 @@ void AreaManager::registerArea(int id, const AreaCallback& cbenter, const AreaCa
 	areas.insert(std::make_pair(id, std::make_pair(cbenter, cbexit)));
 }
 
-void AreaManager::destroyArea(int id)
+void AreaManager::unregisterArea(int id)
 {
 	areas.erase(id);
 }

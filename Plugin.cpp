@@ -184,14 +184,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterDynamicArea(int playerid, int areaid)
 {
 	GameServer::getInstance().areamanager._callbackEnter(GameServer::getInstance().accountmanager.findAccount(playerid), areaid);
-	SendClientMessage(playerid, 0xFFFFFFFF, "Entered");
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerLeaveDynamicArea(int playerid, int areaid)
 {
 	GameServer::getInstance().areamanager._callbackExit(GameServer::getInstance().accountmanager.findAccount(playerid), areaid);
-	SendClientMessage(playerid, 0xFFFFFFFF, "Exited");
 	return true;
 }
 

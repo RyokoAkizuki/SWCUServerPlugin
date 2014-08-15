@@ -236,6 +236,16 @@ void Account::setFreezed(bool freezed)
 	info.freezed = freezed;
 }
 
+bool Account::isJailed() const
+{
+	return info.jailed;
+}
+
+void Account::setJailed(bool jailed)
+{
+	info.jailed = jailed;
+}
+
 AccountInfo& Account::_getAccountInfo()
 {
 	return info;

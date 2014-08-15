@@ -40,6 +40,7 @@ struct AccountInfo
 
 	bool freezed;
 	bool muted;
+	bool jailed;
 
 	int64_t logtime;
 
@@ -50,6 +51,6 @@ struct AccountInfo
 
 	AccountInfo() :
 		money(0), adminlevel(0), disabled(false), loggedin(false), registered(false), ingameid(-1), session(0),
-		freezed(false), muted(false)
+		freezed(false), muted(false), jailed(false)
 	{}
 };

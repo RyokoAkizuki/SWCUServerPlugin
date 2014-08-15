@@ -147,6 +147,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerUpdate(int playerid)
 	{
 		return false;
 	}
+
+	if (acc->isJailed() && !IsPlayerInRangeOfPoint(playerid, 60.0f, 765.81f, -2895.65f, 8.79f))
+	{
+		SetPlayerPos(playerid, 765.81f, -2895.65f, 8.79f);
+	}
+
 	// record this frame data
 	auto& info = acc->_getAccountInfo();
 	GetPlayerPos(playerid, &info.x, &info.y, &info.z);

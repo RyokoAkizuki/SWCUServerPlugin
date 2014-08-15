@@ -62,6 +62,8 @@ public:
 	bool isFreezed() const;
 	void setMuted(bool muted);
 	void setFreezed(bool freezed);
+	bool isJailed() const;
+	void setJailed(bool jailed);
 
 	AccountInfo& _getAccountInfo();
 };

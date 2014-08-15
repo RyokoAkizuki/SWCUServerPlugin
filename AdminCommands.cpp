@@ -93,13 +93,6 @@ ADMIN_CMD_BEGIN_AT(Get, "拉过来", 1, g_admin_player_cmd_reg)
 }
 ADMIN_CMD_END(Get)
 
-ADMIN_CMD_BEGIN_ATR(Jail, "送进监狱", 2, g_admin_player_cmd_reg)
-{
-	SendClientMessage(admin->getInGameID(), 0xFFFFFFFF, "[Admin] 监狱功能尚未完成.");
-	ADMIN_LOG(admin, target, "try to use jail function(unfinished)");
-}
-ADMIN_CMD_END(Jail)
-
 ADMIN_CMD_BEGIN_ATR(Freeze, "冻结", 2, g_admin_player_cmd_reg)
 {
 	target->setFreezed(true);
@@ -135,6 +128,24 @@ ADMIN_CMD_BEGIN_AT(Unmute, "解禁言", 1, g_admin_player_cmd_reg)
 	ADMIN_LOG(admin, target, "");
 }
 ADMIN_CMD_END(Unmute)
+
+ADMIN_CMD_BEGIN_ATR(Jail, "监禁", 2, g_admin_player_cmd_reg)
+{
+	target->setJailed(true);
+	SendClientMessageToAll(0xFFFFFFFF, STR("[Admin] 管理员 " << admin->getLogName() << UID(admin) <<
+		" 将 " << target->getLogName() << UID(target) << " 投进监狱. 原因: " << reason).c_str());
+	ADMIN_LOG(admin, target, reason);
+}
+ADMIN_CMD_END(Jail)
+
+ADMIN_CMD_BEGIN_AT(Unjail, "释放", 1, g_admin_player_cmd_reg)
+{
+	target->setJailed(false);
+	SendClientMessageToAll(0xFFFFFFFF, STR("[Admin] 管理员 " << admin->getLogName() << UID(admin) <<
+		" 将 " << target->getLogName() << UID(target) << " 从监狱释放.").c_str());
+	ADMIN_LOG(admin, target, "");
+}
+ADMIN_CMD_END(Unjail)
 
 ADMIN_CMD_BEGIN_ATR(Kill, "杀死", 2, g_admin_player_cmd_reg)
 {
